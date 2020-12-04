@@ -1,100 +1,100 @@
-The Godfather; 1972; Crime, Drama; 9,2; tt0068646;
-The Shawshank Redemption; 1994; Drama; 9,3; tt0111161;
-Schindler's List; 1993; Biography, Drama, History; 8,9; tt0108052;
-Raging Bull; 1980; Biography, Drama, Sport; 8,2; tt0081398;
-Casablanca; 1942; Drama, Romance, War; 8,5; tt0034583;
-Citizen Kane; 1941; Drama, Mystery; 8,4; tt0033467;
-Gone with the Wind; 1939; Drama, History, Romance; 8,2; tt0031381;
-The Wizard of Oz; 1939; Adventure, Family, Fantasy; 8,0; tt0032138;
-One Flew Over the Cuckoo's Nest; 1975; Drama; 8,7; tt0073486;
-Lawrence of Arabia; 1962; Adventure, Biography, Drama; 8,3; tt0056172;
-Vertigo; 1958; Mystery, Romance, Thriller; 8,3; tt0052357;
-Psycho; 1960; Horror, Mystery, Thriller; 8,5; tt0054215;
-The Godfather: Part II; 1974; Crime, Drama; 9,0; tt0071562;
-On the Waterfront; 1954; Crime, Drama, Thriller; 8,2; tt0047296;
-Sunset Blvd.; 1950; Drama, Film-Noir; 8,4; tt0043014;
-Forrest Gump; 1994; Drama, Romance; 8,8; tt0109830;
-The Sound of Music; 1965; Biography, Drama, Family, Musical; 8,0; tt0059742;
-12 Angry Men; 1957; Crime, Drama; 8,9; tt0050083;
-West Side Story; 1961; Crime, Drama; 7,6; tt0055614;
-Star Wars: Episode IV - A New Hope; 1977; Action, Adventure, Family; 8,6; tt0076759;
-2001: A Space Odyssey; 1968; Adventure, Sci-fi; 8,3; tt0062622;
-E.T. the Extra-Terrestrial; 1982; Family, Sci-fi; 7,9; tt0083866;
-The Silence of the Lambs; 1991; Crime, Drama, Thriller; 8,6; tt0102926;
-Chinatown; 1974; Drama, Mystery, Thriller; 8,2; tt0071315;
-The Bridge on the River Kwai; 1957; Adventure, Drama, War; 8,2; tt0050212;
-Singin' in the Rain; 1952; Comedy, Musical, Romance; 8,3; tt0045152;
-It's a Wonderful Life; 1946; Drama, Family, Fantasy; 8,6; tt0038650;
-Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb; 1964; Comedy, War; 8,4; tt0057012;
-Some Like It Hot; 1959; Comedy, Romance; 8,2; tt0053291;
-Ben-Hur; 1959; Adventure, Drama, History; 8,1; tt0052618;
-Apocalypse Now; 1979; Drama, War; 8,5; tt0078788;
-Amadeus; 1984; Biography, Drama, History; 8,3; tt0086879;
-The Lord of the Rings: The Return of the King; 2003; Action, Adventure, Drama; 8,9; tt0167260;
-Gladiator; 2000; Action, Adventure, Drama; 8,5; tt0172495;
-Titanic; 1997; Drama, Romance; 7,8; tt0120338;
-From Here to Eternity; 1953; Drama, Romance, War; 7,7; tt0045793;
-Saving Private Ryan; 1998; Drama, War; 8,6; tt0120815;
-Unforgiven; 1992; Drama, Western; 8,2; tt0105695;
-Raiders of the Lost Ark; 1981; Action, Adventure; 8,5; tt0082971;
-Rocky; 1976; Drama, Sport; 8,1; tt0075148;
-A Streetcar Named Desire; 1951; Drama; 8,0; tt0044081;
-The Philadelphia Story; 1940; Comedy, Romance; 8,0; tt0032904;
-To Kill a Mockingbird; 1962; Crime, Drama; 8,3; tt0056592;
-An American in Paris; 1951; Drama, Musical, Romance; 7,2; tt0043278;
-The Best Years of Our Lives; 1946; Drama, Romance, War; 8,1; tt0036868;
-My Fair Lady; 1964; Drama, Family, Musical; 7,9; tt0058385;
-A Clockwork Orange; 1971; Crime, Drama, Sci-fi; 8,3; tt0066921;
-Doctor Zhivago; 1965; Drama, Romance, War; 8,0; tt0059113;
-The Searchers; 1956; Adventure, Drama, Western; 8,0; tt0049730;
-Jaws; 1975; Adventure, Drama, Thriller; 8,0; tt0073195;
-Patton; 1970; Biography, Drama, War; 8,0; tt0066206;
-Butch Cassidy and the Sundance Kid; 1969; Biography, Crime, Drama; 8,1; tt0064115;
-The Treasure of the Sierra Madre; 1948; Adventure, Drama, Western; 8,3; tt0040897;
-The Good, the Bad and the Ugly; 1966; Western; 8,9; tt0060196;
-The Apartment; 1960; Comedy, Drama, Romance; 8,3; tt0053604;
-Platoon; 1986; Drama, War; 8,1; tt0091763;
-High Noon; 1952; Action, Drama, Thriller; 8,0; tt0044706;
-Braveheart; 1995; Biography, Drama, History; 8,4; tt0112573;
-Dances with Wolves; 1990; Adventure, Drama, Western; 8,0; tt0099348;
-Jurassic Park; 1993; Adventure, Sci-fi, Thriller; 8,1; tt0107290;
-The Exorcist; 1973; Horror; 8,0; tt0070047;
-The Pianist; 2002; Biography, Drama, Music; 8,5; tt0253474;
-Goodfellas; 1990; Crime, Drama; 8,7; tt0099685;
-The Deer Hunter; 1978; Drama, War; 8,1; tt0077416;
-All Quiet on the Western Front; 1930; Drama, War; 8,1; tt0020629;
-Bonnie and Clyde; 1967; Action, Biography, Crime; 7,9; tt0061418;
-The French Connection; 1971; Action, Crime, Drama; 7,8; tt0067116;
-City Lights; 1931; Comedy, Drama, Romance; 8,5; tt0021749;
-It Happened One Night; 1934; Comedy, Romance; 8,1; tt0025316;
-A Place in the Sun; 1951; Drama, Romance; 7,8; tt0043924;
-Midnight Cowboy; 1969; Drama; 7,9; tt0064665;
-Mr. Smith Goes to Washington; 1939; Comedy, Drama; 8,2; tt0031679;
-Rain Man; 1988; Drama; 8,0; tt0095953;
-Annie Hall; 1977; Comedy, Romance; 8,0; tt0075686;
-Fargo; 1996; Crime, Drama, Thriller; 8,1; tt0116282;
-Giant; 1956; Drama, Western; 7,7; tt0049261;
-Shane; 1953; Drama, Western; 7,7; tt0046303;
-The Grapes of Wrath; 1940; Drama, History; 8,1; tt0032551;
-The Green Mile; 1999; Crime, Drama, Fantasy; 8,5; tt0120689;
-Close Encounters of the Third Kind; 1977; Drama, Sci-fi; 7,7; tt0075860;
-Nashville; 1975; Comedy, Drama, Music; 7,8; tt0073440;
-Network; 1976; Drama; 8,1; tt0074958;
-The Graduate; 1967; Comedy, Drama, Romance; 8,0; tt0061722;
-American Graffiti; 1973; Comedy, Drama; 7,5; tt0069704;
-Pulp Fiction; 1994; Crime, Drama; 8,9; tt0110912;
-Terms of Endearment; 1983; Comedy, Drama; 7,4;  tt0086425;
-Good Will Hunting; 1997; Drama, Romance; 8,3; tt0119217;
-The African Queen; 1951; Adventure, Drama, Romance; 7,9; tt0043265;
-Stagecoach; 1939; Adventure, Western; 7,9; tt0031971;
-Mutiny on the Bounty; 1935; Adventure, Biography, Drama; 7,8; tt0026752;
-The Great Dictator; 1940; Comedy, Drama, War; 8,5; tt0032553;
-Double Indemnity; 1944; Crime, Drama, Film-Noir; 8,3; tt0036775;
-The Maltese Falcon; 1941; Film-Noir, Mystery; 8,1; tt0033870;
-Wuthering Heights; 1939; Drama, Romance; 7,7; tt0032145;
-Taxi Driver; 1976; Crime, Drama; 8,3; tt0075314;
-Rear Window; 1954; Mystery, Thriller; 8,5; tt0047396;
-The Third Man; 1949; Film-Noir, Mystery, Thriller; 8,2; tt0041959;
-Rebel Without a Cause; 1955; Drama; 7,8; tt0048545;
-North by Northwest; 1959; Adventure, Mystery, Thriller; 8,3; tt0053125;
-Yankee Doodle Dandy; 1942; Biography, Drama, Musical; 7,7; tt0035575;
+The Godfather; 1972; Crime, Drama; 9,2; tt0068646; UUkG37KSWf0
+The Shawshank Redemption; 1994; Drama; 9,3; tt0111161; NmzuHjWmXOc
+Schindler's List; 1993; Biography, Drama, History; 8,9; tt0108052; gG22XNhtnoY
+Raging Bull; 1980; Biography, Drama, Sport; 8,2; tt0081398; yUp6d79WRVI
+Casablanca; 1942; Drama, Romance, War; 8,5; tt0034583; BkL9l7qovsE
+Citizen Kane; 1941; Drama, Mystery; 8,4; tt0033467; 8dxh3lwdOFw
+Gone with the Wind; 1939; Drama, History, Romance; 8,2; tt0031381; 0X94oZgJis4
+The Wizard of Oz; 1939; Adventure, Family, Fantasy; 8,0; tt0032138; njdreZRjvpc
+One Flew Over the Cuckoo's Nest; 1975; Drama; 8,7; tt0073486; OXrcDonY-B8
+Lawrence of Arabia; 1962; Adventure, Biography, Drama; 8,3; tt0056172; vOlRhGEhG7k
+Vertigo; 1958; Mystery, Romance, Thriller; 8,3; tt0052357; Geu4LXm_GlY
+Psycho; 1960; Horror, Mystery, Thriller; 8,5; tt0054215; HHMaiPPjHHg
+The Godfather: Part II; 1974; Crime, Drama; 9,0; tt0071562; tF_v4ZZkQWE
+On the Waterfront; 1954; Crime, Drama, Thriller; 8,2; tt0047296; vOdYAXOfLMc
+Sunset Blvd.; 1950; Drama, Film-Noir; 8,4; tt0043014; _dY0SVxnHjQ
+Forrest Gump; 1994; Drama, Romance; 8,8; tt0109830; XHhAG-YLdk8
+The Sound of Music; 1965; Biography, Drama, Family, Musical; 8,0; tt0059742; aMMgcAqOYbI
+12 Angry Men; 1957; Crime, Drama; 8,9; tt0050083; _13J_9B5jEk
+West Side Story; 1961; Crime, Drama; 7,6; tt0055614; -tK9tARX83Y
+Star Wars: Episode IV - A New Hope; 1977; Action, Adventure, Family; 8,6; tt0076759; L-_xHEv0l-w
+2001: A Space Odyssey; 1968; Adventure, Sci-fi; 8,3; tt0062622; UgGCScAV7qU
+E.T. the Extra-Terrestrial; 1982; Family, Sci-fi; 7,9; tt0083866; Qg5It20sHQk
+The Silence of the Lambs; 1991; Crime, Drama, Thriller; 8,6; tt0102926; W6Mm8Sbe__o
+Chinatown; 1974; Drama, Mystery, Thriller; 8,2; tt0071315; p39LFdGI-YA
+The Bridge on the River Kwai; 1957; Adventure, Drama, War; 8,2; tt0050212; PDVjulgOjrE
+Singin' in the Rain; 1952; Comedy, Musical, Romance; 8,3; tt0045152; 5_EVHeNEIJY
+It's a Wonderful Life; 1946; Drama, Family, Fantasy; 8,6; tt0038650; sFXoAVi4FPk
+Dr. Strangelove; 1964; Comedy, War; 8,4; tt0057012; jPU1AYTxwg4
+Some Like It Hot; 1959; Comedy, Romance; 8,2; tt0053291; CPkQ2OQAJSU
+Ben-Hur; 1959; Adventure, Drama, History; 8,1; tt0052618; NR1ZHKw09n8
+Apocalypse Now; 1979; Drama, War; 8,5; tt0078788; FTjG-Aux_yQ
+Amadeus; 1984; Biography, Drama, History; 8,3; tt0086879; r7kWQj9FCGY
+The Lord of the Rings: The Return of the King; 2003; Action, Adventure, Drama; 8,9; tt0167260; y2rYRu8UW8M
+Gladiator; 2000; Action, Adventure, Drama; 8,5; tt0172495; uvbavW31adA
+Titanic; 1997; Drama, Romance; 7,8; tt0120338; b0KYvGa_nN8
+From Here to Eternity; 1953; Drama, Romance, War; 7,7; tt0045793; I7BwIPCX6ZQ
+Saving Private Ryan; 1998; Drama, War; 8,6; tt0120815; 9CiW_DgxCnQ
+Unforgiven; 1992; Drama, Western; 8,2; tt0105695; ftTX4FoBWlE
+Raiders of the Lost Ark; 1981; Action, Adventure; 8,5; tt0082971; Rh_BJXG1-44
+Rocky; 1976; Drama, Sport; 8,1; tt0075148; 3VUblDwa648
+A Streetcar Named Desire; 1951; Drama; 8,0; tt0044081; u9YgJjSCT08
+The Philadelphia Story; 1940; Comedy, Romance; 8,0; tt0032904; oCfuPPR7wnQ
+To Kill a Mockingbird; 1962; Crime, Drama; 8,3; tt0056592; KR7loA_oziY
+An American in Paris; 1951; Drama, Musical, Romance; 7,2; tt0043278; o2WAMZRCbpU
+The Best Years of Our Lives; 1946; Drama, Romance, War; 8,1; tt0036868; 1yc5PugV4mk
+My Fair Lady; 1964; Drama, Family, Musical; 7,9; tt0058385; c880_rbzbxk
+A Clockwork Orange; 1971; Crime, Drama, Sci-fi; 8,3; tt0066921; SPRzm8ibDQ8
+Doctor Zhivago; 1965; Drama, Romance, War; 8,0; tt0059113; CGGr21PilKY
+The Searchers; 1956; Adventure, Drama, Western; 8,0; tt0049730; ii_7QnXPQxA
+Jaws; 1975; Adventure, Drama, Thriller; 8,0; tt0073195; 2YHjoICvTww
+Patton; 1970; Biography, Drama, War; 8,0; tt0066206; 67mW-V1hnJQ
+Butch Cassidy and the Sundance Kid; 1969; Biography, Crime, Drama; 8,1; tt0064115; vqwFSiq8E-U
+The Treasure of the Sierra Madre; 1948; Adventure, Drama, Western; 8,3; tt0040897; XZ8Q9mOYJgE
+The Good, the Bad and the Ugly; 1966; Western; 8,9; tt0060196; D5PpsKZFvPU
+The Apartment; 1960; Comedy, Drama, Romance; 8,3; tt0053604; QqqYnbFHZh0
+Platoon; 1986; Drama, War; 8,1; tt0091763; hGsyEkfjhQk
+High Noon; 1952; Action, Drama, Thriller; 8,0; tt0044706; g9CR_tib0CA
+Braveheart; 1995; Biography, Drama, History; 8,4; tt0112573; 1NJO0jxBtMo
+Dances with Wolves; 1990; Adventure, Drama, Western; 8,0; tt0099348; uc8NMbrW7mI
+Jurassic Park; 1993; Adventure, Sci-fi, Thriller; 8,1; tt0107290; Q_dCQn1KOkM
+The Exorcist; 1973; Horror; 8,0; tt0070047; PjD42P7BAaA
+The Pianist; 2002; Biography, Drama, Music; 8,5; tt0253474; BFwGqLa_oAo
+Goodfellas; 1990; Crime, Drama; 8,7; tt0099685; h3QpxNI-PtE
+The Deer Hunter; 1978; Drama, War; 8,1; tt0077416; 3Gqit3zVmyc
+All Quiet on the Western Front; 1930; Drama, War; 8,1; tt0020629; grapXipP3fM
+Bonnie and Clyde; 1967; Action, Biography, Crime; 7,9; tt0061418; hZpm1zj9510
+The French Connection; 1971; Action, Crime, Drama; 7,8; tt0067116; ncWxtpXn3gA
+City Lights; 1931; Comedy, Drama, Romance; 8,5; tt0021749; 7vl7F8S4cpQ
+It Happened One Night; 1934; Comedy, Romance; 8,1; tt0025316; Kd509cLN-9U
+A Place in the Sun; 1951; Drama, Romance; 7,8; tt0043924; oM2se8-FFWg
+Midnight Cowboy; 1969; Drama; 7,9; tt0064665; vS2IdfBkkj0
+Mr. Smith Goes to Washington; 1939; Comedy, Drama; 8,2; tt0031679; mpJSB4Gbljc
+Rain Man; 1988; Drama; 8,0; tt0095953; mlNwXuHUA8I
+Annie Hall; 1977; Comedy, Romance; 8,0; tt0075686; OqVgCfZX-yE
+Fargo; 1996; Crime, Drama, Thriller; 8,1; tt0116282; bn7LOhWYtqE
+Giant; 1956; Drama, Western; 7,7; tt0049261; 1XHf94YqGyQ
+Shane; 1953; Drama, Western; 7,7; tt0046303; 2AWaGILUCYg
+The Grapes of Wrath; 1940; Drama, History; 8,1; tt0032551; u6icGNGUMVc
+The Green Mile; 1999; Crime, Drama, Fantasy; 8,5; tt0120689; Ki4haFrqSrw
+Close Encounters of the Third Kind; 1977; Drama, Sci-fi; 7,7; tt0075860; XrgC0ut2De0
+Nashville; 1975; Comedy, Drama, Music; 7,8; tt0073440; Ty3oclCA-uM
+Network; 1976; Drama; 8,1; tt0074958; 1cSGvqQHpjs
+The Graduate; 1967; Comedy, Drama, Romance; 8,0; tt0061722; 6KnSucVko1s
+American Graffiti; 1973; Comedy, Drama; 7,5; tt0069704; OZ9Gp6Qc8LQ
+Pulp Fiction; 1994; Crime, Drama; 8,9; tt0110912; 5ZAhzsi1ybM
+Terms of Endearment; 1983; Comedy, Drama; 7,4;  tt0086425; sSY3YUrdSJI
+Good Will Hunting; 1997; Drama, Romance; 8,3; tt0119217; DyiPHC_VQFY
+The African Queen; 1951; Adventure, Drama, Romance; 7,9; tt0043265; gYBDRAp4Or8
+Stagecoach; 1939; Adventure, Western; 7,9; tt0031971; OE-VWDsdkwM
+Mutiny on the Bounty; 1935; Adventure, Biography, Drama; 7,8; tt0026752; aFalJyGNGmE
+The Great Dictator; 1940; Comedy, Drama, War; 8,5; tt0032553; k8bVG8XC-4I
+Double Indemnity; 1944; Crime, Drama, Film-Noir; 8,3; tt0036775; yKrrAa2o9Eg
+The Maltese Falcon; 1941; Film-Noir, Mystery; 8,1; tt0033870; 3a9YU1SVbSE
+Wuthering Heights; 1939; Drama, Romance; 7,7; tt0032145; XmuMd4FnnYo
+Taxi Driver; 1976; Crime, Drama; 8,3; tt0075314; _k8G8B93UK0
+Rear Window; 1954; Mystery, Thriller; 8,5; tt0047396; m01YktiEZCw
+The Third Man; 1949; Film-Noir, Mystery, Thriller; 8,2; tt0041959; WpHiHZcg37Y
+Rebel Without a Cause; 1955; Drama; 7,8; tt0048545; AnQ5CPEMjPI
+North by Northwest; 1959; Adventure, Mystery, Thriller; 8,3; tt0053125; Fx0QuZJVTFE
+Yankee Doodle Dandy; 1942; Biography, Drama, Musical; 7,7; tt0035575; a9hW0Evk2jA
