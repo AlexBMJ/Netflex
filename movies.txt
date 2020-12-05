@@ -83,7 +83,7 @@ Network; 1976; Drama; 8,1; tt0074958; 1cSGvqQHpjs
 The Graduate; 1967; Comedy, Drama, Romance; 8,0; tt0061722; 6KnSucVko1s
 American Graffiti; 1973; Comedy, Drama; 7,5; tt0069704; OZ9Gp6Qc8LQ
 Pulp Fiction; 1994; Crime, Drama; 8,9; tt0110912; 5ZAhzsi1ybM
-Terms of Endearment; 1983; Comedy, Drama; 7,4;  tt0086425; sSY3YUrdSJI
+Terms of Endearment; 1983; Comedy, Drama; 7,4; tt0086425; sSY3YUrdSJI
 Good Will Hunting; 1997; Drama, Romance; 8,3; tt0119217; DyiPHC_VQFY
 The African Queen; 1951; Adventure, Drama, Romance; 7,9; tt0043265; gYBDRAp4Or8
 Stagecoach; 1939; Adventure, Western; 7,9; tt0031971; OE-VWDsdkwM
