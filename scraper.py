@@ -315,7 +315,6 @@ def fetch_episode(inf):
 if __name__ == "__main__":
 	txtfile = open("movies.txt", "r").read().split("\n")
 	movie_list = [[item for item in line.split("; ")] for line in txtfile]
-	movie_list = []
 
 	txtfile = open("shows.txt", "r").read().split("\n")
 	show_list = [[item for item in line.split("; ")] for line in txtfile]
@@ -327,16 +326,16 @@ if __name__ == "__main__":
 	for movie in movie_list:
 		imdb = IMDBscraper(name=movie[0], year=movie[1], search_type='ft')
 		### FETCH IDS ###
-#		print(imdb.id)
+		print(imdb.id)
 
 		## FETCH POSTER ###
-#		img_url = imdb.poster_url
-#		print(img_url)
-#		imdb.save_poster(f"posters/{imdb.id}.jpg")
+		img_url = imdb.poster_url
+		print(img_url)
+		imdb.save_poster(f"posters/{imdb.id}.jpg")
 
 		### FETCH TRAILER ###
-#		video_url = get_trailer(movie[0], movie[1])
-#		print(movie[0], video_url)
+		video_url = get_trailer(movie[0], movie[1])
+		print(movie[0], video_url)
 
 		### BUILD MOVIE JSON ELEMENT ###
 		m_info[imdb.id] = imdb.cast_info
