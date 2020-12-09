@@ -1,4 +1,4 @@
-package Database;
+package databse;
 
 public class ContentDatabase implements Database {
 }
