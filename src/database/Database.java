@@ -1,4 +1,4 @@
-package databse;
+package database;
 
 public interface Database {
 }
