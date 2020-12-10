@@ -44,7 +44,7 @@ public class PageHandler {
         return pageHandler;
     }
 
-    public static PageHandler newPageHandler(Stage stage, int cacheSize) {
+    public static PageHandler create(Stage stage, int cacheSize) {
         pageHandler = new PageHandler(stage, cacheSize);
         return pageHandler;
     }

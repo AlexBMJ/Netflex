@@ -6,7 +6,7 @@ import pages.PageHandler;
 public class Main extends Application {
     @Override
     public void start(Stage stage) {
-        PageHandler window = PageHandler.newPageHandler(stage, 5);
+        PageHandler window = PageHandler.create(stage, 10);
         window.addPage(new BrowsePage());
     }
 
