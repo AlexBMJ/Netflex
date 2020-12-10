@@ -13,13 +13,16 @@ public class Compressor {
 
     public static void main(String[] args) {
         Compressor comp = new Compressor("E:/Java Projects/Netflex/thumbnails", "E:/Java Projects/Netflex/compressed", 400);
-        for (File f : comp.inputPath.listFiles()) {
-            try {
-                comp.saveThumb(f);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (comp.inputPath.exists() && comp.outputPath.exists()) {
+            for (File f : comp.inputPath.listFiles()) {
+                try {
+                    comp.saveThumb(f);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        System.out.printf("Path Error: %s or %s could not be found!", comp.inputPath.toString(), comp.outputPath.toString());
     }
 
     public Compressor(String inputPath, String outputPath, int targetWidth) {
