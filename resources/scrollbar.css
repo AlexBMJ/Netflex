@@ -1,0 +1,63 @@
+/** CSS **/
+.scrollPane{
+	-fx-border-color:derive(gray,80%);
+}
+
+/* The main scrollbar CSS class of ListView */
+.scrollPane .scroll-bar:horizontal ,
+.scrollPane  .scroll-bar:vertical{
+    -fx-background-color:transparent;
+
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+.scrollPane .increment-button ,.scrollPane .decrement-button {
+    -fx-background-color:transparent;
+	-fx-border-color:derive(gray,80%);
+}
+
+/* The main scrollbar **track** CSS class  */
+.scrollPane .scroll-bar:horizontal .track ,
+.scrollPane .scroll-bar:vertical .track{
+     -fx-background-color: transparent;
+	 -fx-border-color:derive(gray,80%);
+	 -fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+.scrollPane .scroll-bar:horizontal .thumb,
+.scrollPane .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(black,90%);
+	-fx-background-insets: 0, 0, 0;
+	-fx-background-radius: 0em;
+
+}
+
+/* ------------------------------------------------------------------------------------- */
+/** EVENT CSS **/
+/* ------------------------------------------------------------------------------------- */
+
+/* The main scrollbar **track** CSS class on event of "hover" and "pressed" */
+
+.scrollPane .scroll-bar:horizontal:hover .track ,
+.scrollPane .scroll-bar:horizontal:pressed .track ,
+.scrollPane .scroll-bar:vertical:hover .track,
+.scrollPane .scroll-bar:vertical:pressed .track{
+     -fx-background-color: derive(#434343,20%);
+
+	 -fx-opacity: 0.2;
+	 -fx-background-radius: 0em;
+
+}
+
+/* The main scrollbar **thumb** CSS class on event of "hover" and "pressed" */
+.scrollPane .scroll-bar .thumb:hover,
+.scrollPane .scroll-bar .thumb:pressed{
+    -fx-background-color: derive(black,50%);
+}
+
+.scrollPane .increment-button:hover ,.scrollPane .decrement-button:hover {
+    -fx-background-color:derive(gray,100%);
+	-fx-border-color:derive(gray,80%);	
+	-fx-padding:10px;
+}
