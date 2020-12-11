@@ -218,7 +218,7 @@ class IMDBscraper:
 		info_list = ps.find_all("div", class_="credit_summary_item")
 		if info_list:
 			raw_list_info = {info.h4.string[:-1]:list(info.find_all("a")) for info in info_list}
-			return {str(key):[str(tag.string) for tag in value if tag.string != "See full cast & crew" or "more credit" in tag.string] for key,value in raw_list_info.items()}
+			return {str(key):[str(tag.string) for tag in value if tag.string != "See full cast & crew" and "more credit" not in tag.string] for key,value in raw_list_info.items()}
 			
 		raise Exception(f"Could not find cast info for {self.id}")
 
@@ -273,6 +273,23 @@ class IMDBscraper:
 		return seasons
 
 
+def fetch_movie(movie):
+	imdb = IMDBscraper(name=movie[0], year=movie[1], search_type='ft')
+	tmp_info = {}
+	tmp_info["MovieID"] = imdb.id
+	tmp_info["Title"] = movie[0]
+	tmp_info["People"] = imdb.cast_info
+	tmp_info["Summary"] = imdb.summary
+	tmp_info["Length"] = imdb.length
+	tmp_info["Year"] = movie[1]
+	tmp_info["Genre"] = movie[2]
+	tmp_info["Score"] = movie[3]
+	tmp_info["Trailer"] = movie[5] 
+	#if f"{imdb.id}.jpg" not in os.listdir("posters"):
+	#	img_url = imdb.poster_url
+	#	imdb.save_poster(f"posters/{imdb.id}.jpg")
+	return tmp_info
+
 def fetch_show(show):
 	imdb = IMDBscraper(name=show[0], year=show[1].split("-")[0], search_type='tv')
 	tmp_info = {}
@@ -323,39 +340,21 @@ if __name__ == "__main__":
 	s_info = dict()
 	e_info = dict()
 
-	for movie in movie_list:
-		imdb = IMDBscraper(name=movie[0], year=movie[1], search_type='ft')
-		### FETCH IDS ###
-		print(imdb.id)
-
-		## FETCH POSTER ###
-		img_url = imdb.poster_url
-		print(img_url)
-		imdb.save_poster(f"posters/{imdb.id}.jpg")
-
-		### FETCH TRAILER ###
-		video_url = get_trailer(movie[0], movie[1])
-		print(movie[0], video_url)
-
-		### BUILD MOVIE JSON ELEMENT ###
-		m_info[imdb.id] = imdb.cast_info
-		m_info[imdb.id]["Summary"] = imdb.summary
-		m_info[imdb.id]["Length"] = imdb.length
-		m_info[imdb.id]["Title"] = movie[0]
-		m_info[imdb.id]["Year"] = movie[1]
-		m_info[imdb.id]["Genre"] = movie[2]
-		m_info[imdb.id]["Score"] = movie[3]
-		m_info[imdb.id]["Trailer"] = movie[5]
-		print(m_info[imdb.id])
-
 	with Pool(processes=16) as pool:
-		for show_dict in pool.imap_unordered(fetch_show, show_list):
-			s_info[show_dict["ShowID"]] = show_dict
-			print("Show:", show_dict["Title"], show_dict["ShowID"])
-			for episode_dict in pool.imap_unordered(fetch_episode, [(show_dict, season_num, ep_num+1, episode) for season_num, episodes in show_dict["Seasons"].items() for ep_num, episode in enumerate(episodes)]):
-				e_info[episode_dict["EpisodeID"]] = episode_dict
-				print("Episode:", episode_dict["EpisodeNumber"], "Season:", episode_dict["Season"], episode_dict["EpisodeID"])
+		for movie_dict in pool.imap_unordered(fetch_movie, movie_list):
+			m_info[movie_dict["MovieID"]] = movie_dict
+			print("Movie:", movie_dict["Title"], movie_dict["MovieID"])
 
-	open("shows.json", "w", encoding="utf-8").write(json.dumps(s_info))
-	open("episodes.json", "w", encoding="utf-8").write(json.dumps(e_info))
+	open("movies_test.json", "w", encoding="utf-8").write(json.dumps(m_info))
+
+	#with Pool(processes=16) as pool:
+	#	for show_dict in pool.imap_unordered(fetch_show, show_list):
+	#		s_info[show_dict["ShowID"]] = show_dict
+	#		print("Show:", show_dict["Title"], show_dict["ShowID"])
+	#		for episode_dict in pool.imap_unordered(fetch_episode, [(show_dict, season_num, ep_num+1, episode) for season_num, episodes in show_dict["Seasons"].items() for ep_num, episode in enumerate(episodes)]):
+	#			e_info[episode_dict["EpisodeID"]] = episode_dict
+	#			print("Episode:", episode_dict["EpisodeNumber"], "Season:", episode_dict["Season"], episode_dict["EpisodeID"])
+
+	#open("shows.json", "w", encoding="utf-8").write(json.dumps(s_info))
+	#open("episodes.json", "w", encoding="utf-8").write(json.dumps(e_info))
 
