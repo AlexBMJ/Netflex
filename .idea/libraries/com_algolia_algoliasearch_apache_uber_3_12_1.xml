@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="com.algolia:algoliasearch-apache-uber:3.12.1" type="repository">
+    <properties maven-id="com.algolia:algoliasearch-apache-uber:3.12.1" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/algolia/algoliasearch-apache-uber/3.12.1/algoliasearch-apache-uber-3.12.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
