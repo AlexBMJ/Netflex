@@ -150,9 +150,7 @@ public class BrowsePage implements Page {
         fadeOutTransition.setDuration(Duration.millis(250));
         fadeOutTransition.setDelay(Duration.millis(400));
         fadeOutTransition.setAutoReverse(false);
-        fadeOutTransition.setOnFinished(actionEvent -> {
-            leftSplit.setVisible(false);
-        });
+        fadeOutTransition.setOnFinished(actionEvent -> leftSplit.setVisible(false));
         fadeOutTransition.setNode(leftSplit);
 
         menuButtonPane.setOnMouseClicked(mouseEvent -> {
@@ -239,7 +237,7 @@ public class BrowsePage implements Page {
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(new Font("Segoe UI Thin", 24));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {yearFilter=String.valueOf(1900+ finalI*10);closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {yearFilter=String.valueOf(1900+finalI*10);closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
