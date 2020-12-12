@@ -1,6 +1,6 @@
 /** CSS **/
 .scrollPane{
-	-fx-border-color:derive(gray,80%);
+	-fx-border-color: black;
 }
 
 /* The main scrollbar CSS class of ListView */

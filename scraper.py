@@ -345,16 +345,16 @@ if __name__ == "__main__":
 			m_info[movie_dict["MovieID"]] = movie_dict
 			print("Movie:", movie_dict["Title"], movie_dict["MovieID"])
 
-	open("movies_test.json", "w", encoding="utf-8").write(json.dumps(m_info))
+	open("movies.json", "w", encoding="utf-8").write(json.dumps(m_info))
 
-	#with Pool(processes=16) as pool:
-	#	for show_dict in pool.imap_unordered(fetch_show, show_list):
-	#		s_info[show_dict["ShowID"]] = show_dict
-	#		print("Show:", show_dict["Title"], show_dict["ShowID"])
-	#		for episode_dict in pool.imap_unordered(fetch_episode, [(show_dict, season_num, ep_num+1, episode) for season_num, episodes in show_dict["Seasons"].items() for ep_num, episode in enumerate(episodes)]):
-	#			e_info[episode_dict["EpisodeID"]] = episode_dict
-	#			print("Episode:", episode_dict["EpisodeNumber"], "Season:", episode_dict["Season"], episode_dict["EpisodeID"])
+	with Pool(processes=16) as pool:
+		for show_dict in pool.imap_unordered(fetch_show, show_list):
+			s_info[show_dict["ShowID"]] = show_dict
+			print("Show:", show_dict["Title"], show_dict["ShowID"])
+			for episode_dict in pool.imap_unordered(fetch_episode, [(show_dict, season_num, ep_num+1, episode) for season_num, episodes in show_dict["Seasons"].items() for ep_num, episode in enumerate(episodes)]):
+				e_info[episode_dict["EpisodeID"]] = episode_dict
+				print("Episode:", episode_dict["EpisodeNumber"], "Season:", episode_dict["Season"], episode_dict["EpisodeID"])
 
-	#open("shows.json", "w", encoding="utf-8").write(json.dumps(s_info))
-	#open("episodes.json", "w", encoding="utf-8").write(json.dumps(e_info))
+	open("shows.json", "w", encoding="utf-8").write(json.dumps(s_info))
+	open("episodes.json", "w", encoding="utf-8").write(json.dumps(e_info))
 
