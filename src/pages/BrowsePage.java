@@ -17,20 +17,24 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 public class BrowsePage implements Page {
     final private String[] genres = {"Crime", "Drama", "Biography", "History", "Sport", "Romance", "War", "Mystery", "Adventure", "Family", "Fantasy", "Thriller", "Horror", "Film-Noir", "Musical", "Sci-fi", "Comedy", "Action", "Western"};
 
     private Scene scene;
     private Boolean menuHover = false;
-    private String searchSource;
-    private String genreFilter;
-    private String yearFilter;
-    private String scoreFilter;
+    private String searchSource = "local";
+    private boolean movieSearch;
+    private HashMap<String, String> searchFilters = new HashMap();
 
     FadeTransition fadeOutTransition = new FadeTransition();
     TranslateTransition closeMenuTransition = new TranslateTransition();
 
     final VBox menuList = new VBox();
+    final Label searchFilterLabel = new Label("");
 
     public BrowsePage() {
         final VBox root = new VBox();
@@ -49,13 +53,26 @@ public class BrowsePage implements Page {
         logo.setPreserveRatio(true);
         logo.setFitHeight(40);
         GridPane.setMargin(menuButtonPane, new Insets(5,15,5,15));
-        GridPane.setMargin(logo, new Insets(5));
+        GridPane.setMargin(logo, new Insets(0,0,0,70));
+        GridPane.setMargin(searchFilterLabel, new Insets(5,25,5,0));
+        searchFilterLabel.setAlignment(Pos.CENTER_RIGHT);
+        searchFilterLabel.setTextFill(Color.WHITE);
+        searchFilterLabel.setFont(new Font("Segoe UI Bold", 20));
         gp1.setPrefHeight(50);
         gp1.setMinHeight(50);
         gp1.setMaxHeight(50);
+        ColumnConstraints cc1 = new ColumnConstraints();
+        cc1.setHgrow(Priority.ALWAYS);
+        cc1.setHalignment(HPos.LEFT);
+        ColumnConstraints cc2 = new ColumnConstraints();
+        cc2.setHgrow(Priority.ALWAYS);
+        cc2.setHalignment(HPos.RIGHT);
         gp1.setStyle("-fx-background-color: black;");
+        gp1.getColumnConstraints().add(0, cc1);
+        gp1.getColumnConstraints().add(1, cc2);
         gp1.add(menuButtonPane,0,0);
-        gp1.add(logo,1,0);
+        gp1.add(logo,0,0);
+        gp1.add(searchFilterLabel, 1, 0);
         root.getChildren().add(gp1);
 
         // Base
@@ -78,7 +95,6 @@ public class BrowsePage implements Page {
         flowPane.setColumnHalignment(HPos.CENTER);
         flowPane.setAlignment(Pos.TOP_CENTER);
         flowPane.setStyle("-fx-background-color: rgb(30,30,30);");
-        FlowPane.setMargin(scrollPane, new Insets(20));
         scrollPane.setContent(flowPane);
         scrollPane.setStyle("-fx-background-color: rgb(30,30,30);");
         scrollPane.getStyleClass().add("scrollPane");
@@ -88,7 +104,7 @@ public class BrowsePage implements Page {
         stackPane.getChildren().add(scrollPane);
 
         // TESTING
-        for (int i=0; i<10; i++)
+        for (int i=0; i<20; i++)
             flowPane.getChildren().add(new ImageView("icon.png"));
 
         // Search Field
@@ -155,8 +171,7 @@ public class BrowsePage implements Page {
 
         menuButtonPane.setOnMouseClicked(mouseEvent -> {
             if (leftSplit.isVisible()) {
-                closeMenuTransition.play();
-                fadeOutTransition.play();
+                closeMenu();
             } else {
                 mainMenuItems();
                 leftSplit.setVisible(true);
@@ -176,6 +191,8 @@ public class BrowsePage implements Page {
         menu.setContent(menuAnchorPane);
         leftSplit.getChildren().add(menu);
         stackPane.getChildren().add(leftSplit);
+        leftSplit.setVisible(false);
+        closeMenu();
 
 
         // Loading Image
@@ -184,9 +201,21 @@ public class BrowsePage implements Page {
         scene = new Scene(root);
     }
 
+    private void initSearchFilters() {
+        if (searchSource == "external")
+            searchFilterLabel.setText("API Search");
+        else if (searchSource == "local") {
+            if (searchFilters.size() > 0) {
+                searchFilterLabel.setText(String.format("%s: %s", (movieSearch ? "Movies" : "TV Shows"), Arrays.asList(searchFilters.values().toArray()).toString().replaceAll("(\\[)|(\\])", "")));
+            } else
+                searchFilterLabel.setText((movieSearch ? "Movies" : "TV Shows"));
+        }
+    }
+
     private void closeMenu() {
         closeMenuTransition.play();
         fadeOutTransition.play();
+        initSearchFilters();
     }
 
     private void mainMenuItems() {
@@ -196,6 +225,11 @@ public class BrowsePage implements Page {
         filterTitleLbl.setFont(new Font("Segoe UI Semibold Italic", 20));
         menuList.getChildren().add(filterTitleLbl);
 
+        Label movieTVshowLabel = new Label((movieSearch ? "TV Shows" : "Movies"));
+        movieTVshowLabel.setCursor(Cursor.HAND);
+        movieTVshowLabel.setTextFill(Color.WHITE);
+        movieTVshowLabel.setFont(new Font("Segoe UI Thin", 24));
+        movieTVshowLabel.setOnMouseClicked(mouseEvent -> {movieSearch=!movieSearch;closeMenu();});
         Label genreLabel = new Label("Genre");
         genreLabel.setCursor(Cursor.HAND);
         genreLabel.setTextFill(Color.WHITE);
@@ -211,15 +245,22 @@ public class BrowsePage implements Page {
         scoreLabel.setTextFill(Color.WHITE);
         scoreLabel.setFont(new Font("Segoe UI Thin", 24));
         scoreLabel.setOnMouseClicked(mouseEvent -> scoreFilterUI());
+        Label APIsearchLabel = new Label("API Search");
+        APIsearchLabel.setCursor(Cursor.HAND);
+        APIsearchLabel.setTextFill(Color.WHITE);
+        APIsearchLabel.setFont(new Font("Segoe UI Thin", 24));
+        APIsearchLabel.setOnMouseClicked(mouseEvent -> {searchFilters.clear();searchSource="external";closeMenu();});
         Label clearLabel = new Label("Clear Filters");
         clearLabel.setCursor(Cursor.HAND);
-        clearLabel.setTextFill(Color.DARKRED);
+        clearLabel.setTextFill(Color.web("#E08000"));
         clearLabel.setFont(new Font("Segoe UI Thin", 20));
-        clearLabel.setOnMouseClicked(mouseEvent -> {genreFilter=null;yearFilter=null;scoreFilter=null;searchSource=null;closeMenu();});
+        clearLabel.setOnMouseClicked(mouseEvent -> {searchFilters.clear();searchSource="local";closeMenu();});
 
+        menuList.getChildren().add(movieTVshowLabel);
         menuList.getChildren().add(genreLabel);
         menuList.getChildren().add(yearLabel);
         menuList.getChildren().add(scoreLabel);
+        menuList.getChildren().add(APIsearchLabel);
         menuList.getChildren().add(clearLabel);
     }
 
@@ -232,12 +273,12 @@ public class BrowsePage implements Page {
         filterTitleLbl.setOnMouseClicked(mouseEvent -> mainMenuItems());
         menuList.getChildren().add(filterTitleLbl);
         for (int i=2; i<=12; i++) {
-            Label lbl = new Label(String.format("%s", 1900 + i*10));
+            Label lbl = new Label(String.format("%s", 1900+i*10));
             lbl.setCursor(Cursor.HAND);
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(new Font("Segoe UI Thin", 24));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {yearFilter=String.valueOf(1900+finalI*10);closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("year",String.valueOf(1900+finalI*10));closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -255,6 +296,7 @@ public class BrowsePage implements Page {
             lbl.setCursor(Cursor.HAND);
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(new Font("Segoe UI Thin", 24));
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("genre",g);closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -268,12 +310,12 @@ public class BrowsePage implements Page {
         filterTitleLbl.setOnMouseClicked(mouseEvent -> mainMenuItems());
         menuList.getChildren().add(filterTitleLbl);
         for (int i=1; i<=10; i++) {
-            Label lbl = new Label(String.format("[ %s ]", i));
+            Label lbl = new Label(String.format("[%s / 10]", i));
             lbl.setCursor(Cursor.HAND);
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(new Font("Segoe UI Thin", 24));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {scoreFilter=(String.valueOf(finalI));closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("score",String.valueOf(finalI));closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
