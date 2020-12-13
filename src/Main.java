@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import pages.BrowsePage;
@@ -10,6 +11,10 @@ public class Main extends Application {
         stage.setWidth(1280);
         stage.setHeight(720);
         stage.getIcons().add(new Image("icon.png"));
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
         PageHandler window = PageHandler.create(stage, 10);
         window.addPage(new BrowsePage());
     }

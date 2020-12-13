@@ -1,8 +1,10 @@
 package pages;
 
 
-import javafx.animation.FadeTransition;
-import javafx.animation.TranslateTransition;
+import content.TVDBResult;
+import database.AlgoliaAPI;
+import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -11,15 +13,23 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+import pages.components.CoverImage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class BrowsePage implements Page {
     final private String[] genres = {"Crime", "Drama", "Biography", "History", "Sport", "Romance", "War", "Mystery", "Adventure", "Family", "Fantasy", "Thriller", "Horror", "Film-Noir", "Musical", "Sci-fi", "Comedy", "Action", "Western"};
@@ -27,20 +37,57 @@ public class BrowsePage implements Page {
     private Scene scene;
     private Boolean menuHover = false;
     private String searchSource = "local";
-    private boolean movieSearch;
+    private boolean movieSearch = true;
     private HashMap<String, String> searchFilters = new HashMap();
+    private String[] prevSearchTerm = {"", "Movie"};
+    private Timeline searchDelay = new Timeline(
+            new KeyFrame(Duration.seconds(1),
+                    event -> searchAPI()));
 
     FadeTransition fadeOutTransition = new FadeTransition();
     TranslateTransition closeMenuTransition = new TranslateTransition();
 
     final VBox menuList = new VBox();
+    final FlowPane flowPane = new FlowPane();
+    final TextField searchField = new TextField();
     final Label searchFilterLabel = new Label("");
+    final ImageView loadingGif = new ImageView("loading_medium.gif");
+
+
+    private Runnable searchRun = () -> {
+        loadingGif.setVisible(true);
+        List<CoverImage> coverList = new ArrayList();
+        List<TVDBResult> hits = AlgoliaAPI.getSeriesHits(prevSearchTerm[0], prevSearchTerm[1], 30);
+        int actualHits = 0;
+        for (TVDBResult result : hits)
+            if (isValidAPIData(result)) {
+                actualHits++;
+                Platform.runLater(() -> coverList.add(addCoverElement(result)));
+            }
+        if (actualHits > 0) {
+            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(actualHits);
+            while (coverList.size() < actualHits) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            for (CoverImage covimg : coverList)
+                executor.execute(covimg.fetchImage);
+            executor.shutdown();
+        } else {
+            Platform.runLater(() -> flowPane.getChildren().addAll(new Label(String.format("No results for \"%s\" in %s", prevSearchTerm[0], movieSearch ? "Movies" : "TV Shows"))));
+        }
+        Platform.runLater(() -> loadingGif.setVisible(false));
+        return;
+    };
 
     public BrowsePage() {
         final VBox root = new VBox();
         root.setFillWidth(true);
         root.setAlignment(Pos.TOP_LEFT);
-        root.setStyle("-fx-background-color: rgb(30,30,30);");
+        root.setStyle("-fx-background-color: rgb(90,30,30);");
 
         // Header
         final GridPane gp1 = new GridPane();
@@ -77,18 +124,12 @@ public class BrowsePage implements Page {
 
         // Base
         final StackPane stackPane = new StackPane();
-        final AnchorPane mainAnchorPane = new AnchorPane();
         stackPane.setAlignment(Pos.TOP_CENTER);
-        mainAnchorPane.setTopAnchor(stackPane, 0d);
-        mainAnchorPane.setBottomAnchor(stackPane, 0d);
-        mainAnchorPane.setLeftAnchor(stackPane, 0d);
-        mainAnchorPane.setRightAnchor(stackPane, 0d);
-        mainAnchorPane.getChildren().add(stackPane);
-        root.getChildren().add(mainAnchorPane);
+        VBox.setVgrow(stackPane, Priority.ALWAYS);
+        root.getChildren().add(stackPane);
 
         // Scroll Container
         final ScrollPane scrollPane = new ScrollPane();
-        final FlowPane flowPane = new FlowPane();
         flowPane.setPadding(new Insets(20));
         flowPane.setHgap(10);
         flowPane.setVgap(10);
@@ -108,7 +149,6 @@ public class BrowsePage implements Page {
             flowPane.getChildren().add(new ImageView("icon.png"));
 
         // Search Field
-        final TextField searchField = new TextField();
         searchField.setMaxWidth(300);
         searchField.setMaxHeight(25);
         searchField.setPromptText("Search");
@@ -116,6 +156,7 @@ public class BrowsePage implements Page {
         searchField.setOpacity(0.8f);
         searchField.setAlignment(Pos.TOP_CENTER);
         StackPane.setMargin(searchField, new Insets(15,0,0,0));
+        searchField.setOnKeyTyped(keyEvent -> search());
         stackPane.getChildren().add(searchField);
 
         // Filter Menu
@@ -196,14 +237,24 @@ public class BrowsePage implements Page {
 
 
         // Loading Image
-        final ImageView loadingIcon = new ImageView("loading_medium.gif");
+        loadingGif.setPreserveRatio(true);
+        loadingGif.setFitWidth(100);
+        loadingGif.setY(100);
+        stackPane.getChildren().add(loadingGif);
 
         scene = new Scene(root);
     }
 
+    private void search() {
+        if (searchSource == "external")
+            checkSearchTimer();
+        else
+            System.out.println(searchField.getText() + " | WIP"); // TODO: IMPLEMENT LOCAL SEARCH
+    }
+
     private void initSearchFilters() {
         if (searchSource == "external")
-            searchFilterLabel.setText("API Search");
+            searchFilterLabel.setText((movieSearch ? "Movies" : "TV Shows") + ": API Search");
         else if (searchSource == "local") {
             if (searchFilters.size() > 0) {
                 searchFilterLabel.setText(String.format("%s: %s", (movieSearch ? "Movies" : "TV Shows"), Arrays.asList(searchFilters.values().toArray()).toString().replaceAll("(\\[)|(\\])", "")));
@@ -216,6 +267,7 @@ public class BrowsePage implements Page {
         closeMenuTransition.play();
         fadeOutTransition.play();
         initSearchFilters();
+        search();
     }
 
     private void mainMenuItems() {
@@ -278,7 +330,7 @@ public class BrowsePage implements Page {
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(new Font("Segoe UI Thin", 24));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("year",String.valueOf(1900+finalI*10));closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("year",String.valueOf(1900+finalI*10));searchSource="local";closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -296,7 +348,7 @@ public class BrowsePage implements Page {
             lbl.setCursor(Cursor.HAND);
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(new Font("Segoe UI Thin", 24));
-            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("genre",g);closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("genre",g);searchSource="local";closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -315,9 +367,64 @@ public class BrowsePage implements Page {
             lbl.setTextFill(Color.WHITE);
             lbl.setFont(new Font("Segoe UI Thin", 24));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("score",String.valueOf(finalI));closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("score",String.valueOf(finalI));searchSource="local";closeMenu();});
             menuList.getChildren().add(lbl);
         }
+    }
+
+    public void checkSearchTimer() {
+        loadingGif.setVisible(true);
+        searchDelay.stop();
+        searchDelay.play();
+    }
+
+    private void searchAPI() {
+        String searchTerm = searchField.getText();
+        String searchType = (movieSearch ? "Movie" : "TV");
+        if (searchTerm.length() > 1)
+            if (!prevSearchTerm[0].equals(searchTerm) || !prevSearchTerm[1].equals(searchType)) {
+                prevSearchTerm[0] = searchTerm;
+                prevSearchTerm[1] = searchType;
+                flowPane.getChildren().clear();
+                Thread t = new Thread(searchRun);
+                t.setDaemon(true);
+                t.start();
+            } else
+                loadingGif.setVisible(false);
+    }
+
+    private boolean isValidAPIData(TVDBResult result) {
+        return (result.getImage() != null &&
+                result.getImage().length() >= 1 &&
+                !result.getImage().equals("https://artworks.thetvdb.com/banners/images/missing/movie.jpg") &&
+                !result.getImage().equals("https://artworks.thetvdb.com/banners/images/missing/series.jpg") &&
+                result.getOverviews() != null &&
+                result.getOverviews().containsKey("eng"));
+    }
+
+    private CoverImage addCoverElement(TVDBResult result) {
+        CoverImage imgView = new CoverImage(new Image("placeholder.png"), result);
+        imgView.setPreserveRatio(true);
+        imgView.setFitWidth(250);
+        imgView.setEffect(new DropShadow());
+        imgView.setCursor(Cursor.HAND);
+
+        ScaleTransition scaleUpTransition = new ScaleTransition();
+        scaleUpTransition.setDuration(Duration.millis(100));
+        scaleUpTransition.setNode(imgView);
+        scaleUpTransition.setToX(1.05);
+        scaleUpTransition.setToY(1.05);
+
+        ScaleTransition scaleDownTransition = new ScaleTransition();
+        scaleDownTransition.setDuration(Duration.millis(100));
+        scaleDownTransition.setNode(imgView);
+        scaleDownTransition.setToX(1);
+        scaleDownTransition.setToY(1);
+
+        imgView.setOnMouseEntered(MouseEvent -> scaleUpTransition.play());
+        imgView.setOnMouseExited(MouseEvent -> scaleDownTransition.play());
+        flowPane.getChildren().add(imgView);
+        return imgView;
     }
 
     public Scene getScene() {
