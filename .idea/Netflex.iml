@@ -15,8 +15,10 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="org.imgscalr:imgscalr-lib:4.2" level="project" />
     <orderEntry type="library" name="Python 3.8 interpreter library" level="application" />
+    <orderEntry type="library" name="org.xerial:sqlite-jdbc:3.32.3.3" level="project" />
     <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="javafx" level="project" />
-    <orderEntry type="library" name="org.xerial:sqlite-jdbc:3.34.0" level="project" />
+    <orderEntry type="library" name="com.algolia:algoliasearch-core:3.12.1" level="project" />
+    <orderEntry type="library" name="com.algolia:algoliasearch-apache-uber:3.12.1" level="project" />
   </component>
 </module>
