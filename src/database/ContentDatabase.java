@@ -68,9 +68,9 @@ public class ContentDatabase implements Database {
             String prepareKey = "";
             String prepareValue = "";
             String prepareDatabase = "";
-            for (Map.Entry pair : pairList) {
-                pair.setValue(pair.getValue().toString().replace("'","£"));
+            ArrayList<String> information = new ArrayList();
 
+            for (Map.Entry pair : pairList) {
                 if (pair.getKey().toString().equals("People")) {
                     String s = "{\"" + pair.getKey() + "\": " + pair.getValue() + "}";
                     JSONObject joPeople = (JSONObject) new JSONParser().parse(s);
@@ -93,12 +93,14 @@ public class ContentDatabase implements Database {
                             }
 
                             prepareKey += pairPeople.getKey() + ", ";
-                            prepareValue += "'" + pairPeople.getValue() + "', ";
+                            prepareValue += "?, ";
+                            information.add(pairPeople.getValue().toString());
                         }
                     }
                 } else {
                     prepareKey += pair.getKey() + ", ";
-                    prepareValue += "'" + pair.getValue() + "', ";
+                    prepareValue += "?, ";
+                    information.add(pair.getValue().toString());
                 }
                     if (pair.getKey().toString().equals("People")) {
                         prepareDatabase += "Writers STRING, Stars STRING, Director STRING, Creator STRING, ";
@@ -115,7 +117,13 @@ public class ContentDatabase implements Database {
                 try (Connection conn = DriverManager.getConnection(url)) {
                     Statement stmt = conn.createStatement();
                     stmt.execute("CREATE TABLE IF NOT EXISTS " + jsonFile.toUpperCase() + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " + prepareDatabase + ")");
-                    stmt.executeUpdate("INSERT INTO " + jsonFile.toUpperCase() + "(" + prepareKey + ") VALUES(" + prepareValue + ")");
+                    String sql = "INSERT INTO " + jsonFile.toUpperCase() + "(" + prepareKey + ") VALUES(" + prepareValue + ")";
+                    PreparedStatement pstmt = conn.prepareStatement(sql);
+
+                    for (int i = 0; i < information.size(); i++) {
+                        pstmt.setString(i+1, information.get(i));
+                    }
+                    pstmt.executeUpdate();
 
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
@@ -126,6 +134,6 @@ public class ContentDatabase implements Database {
             }
 
         }
-        System.out.println("Done");
+        System.out.println("Done" + jsonFile);
     }
 }
