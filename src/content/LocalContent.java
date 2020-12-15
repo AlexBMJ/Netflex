@@ -10,7 +10,4 @@ public abstract class LocalContent implements Content {
     private String[] writers;
     private String[] stars;
 
-
-
-
 }
