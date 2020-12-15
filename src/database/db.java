@@ -11,7 +11,7 @@ import java.sql.*;
 public class db {
 
     private String[] movieFields = new String[]{"MovieID","Title","Director","Writers","Stars","Summary","Length","Year","Genre","Score","Trailer"};
-    final private String url = "jdbc:sqlite:E:/Java Projects/Netflex/out/production/Netflex/test.db";
+    final private String url = "jdbc:sqlite:test.db";
 
     private Connection connect() {
         Connection conn = null;
@@ -30,7 +30,7 @@ public class db {
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1,movieJson.get("MovieID").toString());
             pstmt.setString(2,movieJson.get("Title").toString());
-
+            pstmt.setArray(9,conn.createArrayOf("VARCHAR", new String[]{"ok","ok2"}));
             JSONObject people = (JSONObject)(movieJson.get("People"));
             if (!people.containsKey("Director"))
                 pstmt.setArray(3, conn.createArrayOf("text", ((JSONArray) people.get("Director")).toArray()));

@@ -5,9 +5,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,14 +21,14 @@ public class ContentDatabase implements Database {
     public void createNewDatabase(String fileName){
 
         try {
-            Path path = Paths.get("C:/sqlite/db/");
+            Path path = Paths.get(".");
             Files.createDirectories(path);
         }
         catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
-        String url = "jdbc:sqlite:C:/sqlite/db/" + fileName;
+        String url = "jdbc:sqlite:" + fileName;
         this.url = url;
         try {
             Class.forName("org.sqlite.JDBC");
@@ -50,10 +50,9 @@ public class ContentDatabase implements Database {
 
     }
 
-    public void parseInfoToDatabase(String jsonFile) throws IOException, ParseException {
+    public void parseInfoToDatabase(String jsonFile, String imagePath) throws IOException, ParseException {
 
         JSONObject jo = (JSONObject) new JSONParser().parse(new FileReader(jsonFile + ".json"));
-
         for(Iterator iterator = jo.keySet().iterator(); iterator.hasNext();) {
             String key = (String) iterator.next();
             Map movieID = (Map) jo.get(key);
@@ -68,6 +67,8 @@ public class ContentDatabase implements Database {
             String prepareKey = "";
             String prepareValue = "";
             String prepareDatabase = "";
+            byte[] prepareImage;
+
             ArrayList<String> information = new ArrayList();
 
             for (Map.Entry pair : pairList) {
@@ -110,19 +111,25 @@ public class ContentDatabase implements Database {
             }
             prepareKey = prepareKey.substring(0, prepareKey.length()-2);
             prepareValue = prepareValue.substring(0, prepareValue.length()-2);
+            try {
+                prepareImage = imageToBytes(imagePath+key+".jpg");
+            } catch (IOException e) {
+                prepareImage = imageToBytes(imagePath+"missing.jpg");
+            }
             prepareDatabase = prepareDatabase.substring(0, prepareDatabase.length()-2);
 
             try {
                 Class.forName("org.sqlite.JDBC");
                 try (Connection conn = DriverManager.getConnection(url)) {
                     Statement stmt = conn.createStatement();
-                    stmt.execute("CREATE TABLE IF NOT EXISTS " + jsonFile.toUpperCase() + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " + prepareDatabase + ")");
-                    String sql = "INSERT INTO " + jsonFile.toUpperCase() + "(" + prepareKey + ") VALUES(" + prepareValue + ")";
+                    stmt.execute("CREATE TABLE IF NOT EXISTS " + jsonFile.toUpperCase() + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " + prepareDatabase + ", IMAGE)");
+                    String sql = "INSERT INTO " + jsonFile.toUpperCase() + "(" + prepareKey + ", IMAGE) VALUES(" + prepareValue + ", ?)";
                     PreparedStatement pstmt = conn.prepareStatement(sql);
 
                     for (int i = 0; i < information.size(); i++) {
                         pstmt.setString(i+1, information.get(i));
                     }
+                    pstmt.setBytes(information.size()+1, prepareImage);
                     pstmt.executeUpdate();
 
                 } catch (SQLException e) {
@@ -135,5 +142,12 @@ public class ContentDatabase implements Database {
 
         }
         System.out.println("Done" + jsonFile);
+    }
+
+    public static byte[] imageToBytes(String imagePath) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BufferedImage img = ImageIO.read(new File(imagePath));
+        ImageIO.write(img, "jpg", baos);
+        return baos.toByteArray();
     }
 }

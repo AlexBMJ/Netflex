@@ -77,7 +77,7 @@ public class BrowsePage implements Page {
                 executor.execute(covimg.fetchImage);
             executor.shutdown();
         } else {
-            Platform.runLater(() -> flowPane.getChildren().addAll(new Label(String.format("No results for \"%s\" in %s", prevSearchTerm[0], movieSearch ? "Movies" : "TV Shows"))));
+            Platform.runLater(() -> noResultsElement());
         }
         Platform.runLater(() -> loadingGif.setVisible(false));
         return;
@@ -425,6 +425,14 @@ public class BrowsePage implements Page {
         imgView.setOnMouseExited(MouseEvent -> scaleDownTransition.play());
         flowPane.getChildren().add(imgView);
         return imgView;
+    }
+
+    private void noResultsElement() {
+        Label lbl = new Label(String.format("No results for \"%s\" in %s", prevSearchTerm[0], movieSearch ? "Movies" : "TV Shows"));
+        lbl.setTextFill(Color.WHITE);
+        lbl.setFont(new Font("Segoe UI Semibold", 24));
+        FlowPane.setMargin(lbl, new Insets(50, 0, 0, 0));
+        flowPane.getChildren().add(lbl);
     }
 
     public Scene getScene() {

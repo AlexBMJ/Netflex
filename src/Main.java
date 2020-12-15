@@ -10,6 +10,7 @@ public class Main extends Application {
     public void start(Stage stage) {
         stage.setWidth(1280);
         stage.setHeight(720);
+        stage.setTitle("NETFLEX");
         stage.getIcons().add(new Image("icon.png"));
         stage.setOnCloseRequest(e -> {
             Platform.exit();
