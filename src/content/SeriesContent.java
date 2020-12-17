@@ -1,16 +1,21 @@
 package content;
 
-import java.awt.image.BufferedImage;
+import javafx.print.Collation;
+
+import java.util.*;
 
 public class SeriesContent extends LocalContent {
-    private String[][] seasons;
     private int yearEnded;
+    private ArrayList<String[]> seasons;
 
-    public SeriesContent(String id, String title, String summary, String length, float score, int yearAired, int yearEnded, String[] genres, String[] writers, String[] stars, byte[] image, String[][] seasons) {
+    public SeriesContent(String id, String title, String summary, String length, float score, int yearAired, int yearEnded, String[] genres, String[] writers, String[] stars, byte[] image, TreeMap<String,ArrayList<String>> seasons) {
         super(id, title, summary, length, score, yearAired, genres, writers, stars, image);
-        this.seasons = seasons;
+        this.yearEnded = yearEnded;
+        this.seasons = new ArrayList();
+        seasons.values().forEach(s -> this.seasons.add(s.toArray(new String[s.size()])));
     }
 
-    public String[][] getSeasons() {return seasons;}
+    public ArrayList<String[]> getSeasons() {return seasons;}
+    public int getYearEnded() {return yearEnded;}
 
 }

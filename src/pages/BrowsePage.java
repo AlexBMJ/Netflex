@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -65,7 +66,6 @@ public class BrowsePage implements Page {
     final Label searchFilterLabel = new Label("");
     final ImageView loadingGif = new ImageView("loading_medium.gif");
 
-
     private Runnable searchRun = () -> {
         loadingGif.setVisible(true);
         List<CoverImage> coverList = new ArrayList();
@@ -73,17 +73,10 @@ public class BrowsePage implements Page {
         int actualHits = 0;
         if (searchSource == "local") {
             String type = (prevSearchTerm[1] == "Movie" ? "Movies" : "Shows");
-            ResultSet results = SearchDatabase.search(prevSearchTerm[0], type, searchFilters);
-            if (type == "Movies") {
-                for (MovieContent movie : parseMovieResult(results)) {
-                    actualHits++;
-                    Platform.runLater(() -> coverList.add(addCoverElement(movie)));
-                }
-            } else if (type == "Shows") {
-                for (SeriesContent show : parseSeriesResult(results)) {
-                    actualHits++;
-                    Platform.runLater(() -> coverList.add(addCoverElement(show)));
-                }
+            ArrayList<LocalContent> results = SearchDatabase.search(prevSearchTerm[0], type, searchFilters);
+            for (LocalContent movie : results) {
+                actualHits++;
+                Platform.runLater(() -> coverList.add(addCoverElement(movie)));
             }
         } else if (searchSource == "external") {
             List<TVDBResult> hits = AlgoliaAPI.getSeriesHits(prevSearchTerm[0], prevSearchTerm[1], 30);
@@ -369,7 +362,7 @@ public class BrowsePage implements Page {
             lbl.setOnMouseEntered(mouseEvent -> lbl.setTextFill(Color.WHITE));
             lbl.setOnMouseExited(mouseEvent -> lbl.setTextFill(Color.DARKGRAY));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("Year",String.valueOf(190+finalI));searchSource="local";closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("Year",String.valueOf(1900+finalI*10));searchSource="local";closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -410,7 +403,7 @@ public class BrowsePage implements Page {
             lbl.setOnMouseEntered(mouseEvent -> lbl.setTextFill(Color.WHITE));
             lbl.setOnMouseExited(mouseEvent -> lbl.setTextFill(Color.DARKGRAY));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("Score",String.valueOf(finalI)+",");searchSource="local";closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("Score",String.valueOf(finalI));searchSource="local";closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -445,85 +438,13 @@ public class BrowsePage implements Page {
                 result.getOverviews().containsKey("eng"));
     }
 
-    private ArrayList<MovieContent> parseMovieResult(ResultSet results) {
-        try {
-            System.out.println(results.next());
-            System.out.println(results.getString("Title"));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        ArrayList movies = new ArrayList();
-        try {
-            while (results.next()) {
-                System.out.println("MOVIE2");
-                ObjectMapper mapper = new ObjectMapper();
-                MovieContent movie = new MovieContent(
-                        results.getString("MovieID"),
-                        results.getString("Title"),
-                        results.getString("Summary"),
-                        results.getString("Length"),
-                        Float.parseFloat(results.getString("Score").replace(',', '.')),
-                        Integer.parseInt(results.getString("Year")),
-                        results.getString("Genres").split(", "),
-                        mapper.readValue(results.getString("Writers"), String[].class),
-                        mapper.readValue(results.getString("Stars"), String[].class),
-                        mapper.readValue(results.getString("IMAGE"), byte[].class),
-                        results.getString("Trailer")
-                );
-                movies.add(movie);
-                System.out.println(movie.getTitle());
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return movies;
-    }
-
-    private ArrayList<SeriesContent> parseSeriesResult(ResultSet results) {
-        ArrayList movies = new ArrayList();
-        Pattern regx = Pattern.compile("(\\d\\d\\d\\d)");
-
-            try {
-            while (results.next()) {
-                ObjectMapper mapper = new ObjectMapper();
-                Matcher m = regx.matcher(results.getString("Year"));
-                SeriesContent movie = new SeriesContent(
-                        results.getString("ShowID"),
-                        results.getString("Title"),
-                        results.getString("Summary"),
-                        results.getString("Length"),
-                        Float.parseFloat(results.getString("Score").replace(',', '.')),
-                        (m.find() ? Integer.parseInt(m.group(0)) : 0),
-                        (m.find() ? Integer.parseInt(m.group(0)) : 0),
-                        results.getString("Genres").split(", "),
-                        mapper.readValue(results.getString("Writers"), String[].class),
-                        mapper.readValue(results.getString("Stars"), String[].class),
-                        mapper.readValue(results.getString("IMAGE"), byte[].class),
-                        mapper.readValue(results.getString("Seasons"), String[][].class)
-                );
-                movies.add(movie);
-
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return movies;
-    }
-
     private CoverImage addCoverElement(Content result) {
-        CoverImage imgView = new CoverImage(new Image("placeholder.png"), result);
+        CoverImage imgView = new CoverImage(new Image("placeholder.jpg"), result, 0.65f);
         imgView.setPreserveRatio(true);
         imgView.setFitWidth(250);
         imgView.setEffect(new DropShadow());
         imgView.setCursor(Cursor.HAND);
+        imgView.setSmooth(true);
 
         ScaleTransition scaleUpTransition = new ScaleTransition();
         scaleUpTransition.setDuration(Duration.millis(100));

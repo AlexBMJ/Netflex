@@ -1,7 +1,5 @@
 package content;
 
-import java.awt.image.BufferedImage;
-
 public class MovieContent extends LocalContent {
     private String trailer;
 
