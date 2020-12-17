@@ -1,24 +1,24 @@
 package pages.components;
 
-import content.TVDBResult;
+import content.Content;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class CoverImage extends ImageView {
 
-    private TVDBResult MovieInfo;
+    private Content MovieInfo;
 
-    public CoverImage(Image img, TVDBResult result) {
+    public CoverImage(Image img, Content result) {
         super(img);
         MovieInfo = result;
     }
 
-    public TVDBResult getInfo() {return MovieInfo;}
+    public Content getInfo() {return MovieInfo;}
 
     public Runnable fetchImage = () -> {
-        Image img = new Image(MovieInfo.getImage());
-        Platform.runLater(() -> this.setImage(img));
+        Image image = MovieInfo.getImage();
+        Platform.runLater(() -> this.setImage(image));
     };
 
 }

@@ -1,20 +1,25 @@
 package database;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
-public class ContentDatabase implements Database {
+public class ContentDatabase {
 
     private String url;
 
@@ -44,10 +49,6 @@ public class ContentDatabase implements Database {
         catch (ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    public void connect(){
-
     }
 
     public void parseInfoToDatabase(String jsonFile, String imagePath) throws IOException, ParseException {

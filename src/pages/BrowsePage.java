@@ -1,8 +1,12 @@
 package pages;
 
 
-import content.TVDBResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import content.*;
 import database.AlgoliaAPI;
+import database.SearchDatabase;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
@@ -13,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
@@ -20,16 +25,23 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import pages.components.CoverImage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.lang.ref.Cleaner;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BrowsePage implements Page {
     final private String[] genres = {"Crime", "Drama", "Biography", "History", "Sport", "Romance", "War", "Mystery", "Adventure", "Family", "Fantasy", "Thriller", "Horror", "Film-Noir", "Musical", "Sci-fi", "Comedy", "Action", "Western"};
@@ -57,13 +69,31 @@ public class BrowsePage implements Page {
     private Runnable searchRun = () -> {
         loadingGif.setVisible(true);
         List<CoverImage> coverList = new ArrayList();
-        List<TVDBResult> hits = AlgoliaAPI.getSeriesHits(prevSearchTerm[0], prevSearchTerm[1], 30);
+
         int actualHits = 0;
-        for (TVDBResult result : hits)
-            if (isValidAPIData(result)) {
-                actualHits++;
-                Platform.runLater(() -> coverList.add(addCoverElement(result)));
+        if (searchSource == "local") {
+            String type = (prevSearchTerm[1] == "Movie" ? "Movies" : "Shows");
+            ResultSet results = SearchDatabase.search(prevSearchTerm[0], type, searchFilters);
+            if (type == "Movies") {
+                for (MovieContent movie : parseMovieResult(results)) {
+                    actualHits++;
+                    Platform.runLater(() -> coverList.add(addCoverElement(movie)));
+                }
+            } else if (type == "Shows") {
+                for (SeriesContent show : parseSeriesResult(results)) {
+                    actualHits++;
+                    Platform.runLater(() -> coverList.add(addCoverElement(show)));
+                }
             }
+        } else if (searchSource == "external") {
+            List<TVDBResult> hits = AlgoliaAPI.getSeriesHits(prevSearchTerm[0], prevSearchTerm[1], 30);
+            for (TVDBResult result : hits)
+                if (isValidAPIData(result)) {
+                    actualHits++;
+                    Platform.runLater(() -> coverList.add(addCoverElement(new ExternalContent(result))));
+                }
+        }
+
         if (actualHits > 0) {
             ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(actualHits);
             while (coverList.size() < actualHits) {
@@ -84,6 +114,10 @@ public class BrowsePage implements Page {
     };
 
     public BrowsePage() {
+        //Initilaize DB
+        SearchDatabase.connect();
+
+        // Root
         final VBox root = new VBox();
         root.setFillWidth(true);
         root.setAlignment(Pos.TOP_LEFT);
@@ -144,10 +178,6 @@ public class BrowsePage implements Page {
         scrollPane.setFitToWidth(true);
         stackPane.getChildren().add(scrollPane);
 
-        // TESTING
-        for (int i=0; i<20; i++)
-            flowPane.getChildren().add(new ImageView("icon.png"));
-
         // Search Field
         searchField.setMaxWidth(300);
         searchField.setMaxHeight(25);
@@ -155,9 +185,18 @@ public class BrowsePage implements Page {
         searchField.setStyle("-fx-background-color: rgb(20,20,20); -fx-text-fill: white");
         searchField.setOpacity(0.8f);
         searchField.setAlignment(Pos.TOP_CENTER);
-        StackPane.setMargin(searchField, new Insets(15,0,0,0));
-        searchField.setOnKeyTyped(keyEvent -> search());
+        StackPane.setMargin(searchField, new Insets(20,0,0,0));
+        searchField.setOnKeyTyped(keyEvent -> checkSearchTimer());
         stackPane.getChildren().add(searchField);
+
+        // Loading Image
+        loadingGif.setBlendMode(BlendMode.SCREEN);
+        loadingGif.setPreserveRatio(true);
+        loadingGif.setFitWidth(400);
+        loadingGif.setVisible(false);
+        StackPane.setMargin(loadingGif, new Insets(0, 0, 20,0));
+        StackPane.setAlignment(loadingGif, Pos.BOTTOM_CENTER);
+        stackPane.getChildren().add(loadingGif);
 
         // Filter Menu
         final HBox leftSplit = new HBox();
@@ -235,21 +274,7 @@ public class BrowsePage implements Page {
         leftSplit.setVisible(false);
         closeMenu();
 
-
-        // Loading Image
-        loadingGif.setPreserveRatio(true);
-        loadingGif.setFitWidth(100);
-        loadingGif.setY(100);
-        stackPane.getChildren().add(loadingGif);
-
         scene = new Scene(root);
-    }
-
-    private void search() {
-        if (searchSource == "external")
-            checkSearchTimer();
-        else
-            System.out.println(searchField.getText() + " | WIP"); // TODO: IMPLEMENT LOCAL SEARCH
     }
 
     private void initSearchFilters() {
@@ -267,7 +292,7 @@ public class BrowsePage implements Page {
         closeMenuTransition.play();
         fadeOutTransition.play();
         initSearchFilters();
-        search();
+        checkSearchTimer();
     }
 
     private void mainMenuItems() {
@@ -279,34 +304,46 @@ public class BrowsePage implements Page {
 
         Label movieTVshowLabel = new Label((movieSearch ? "TV Shows" : "Movies"));
         movieTVshowLabel.setCursor(Cursor.HAND);
-        movieTVshowLabel.setTextFill(Color.WHITE);
+        movieTVshowLabel.setTextFill(Color.DARKGRAY);
         movieTVshowLabel.setFont(new Font("Segoe UI Thin", 24));
         movieTVshowLabel.setOnMouseClicked(mouseEvent -> {movieSearch=!movieSearch;closeMenu();});
+        movieTVshowLabel.setOnMouseEntered(mouseEvent -> movieTVshowLabel.setTextFill(Color.WHITE));
+        movieTVshowLabel.setOnMouseExited(mouseEvent -> movieTVshowLabel.setTextFill(Color.DARKGRAY));
         Label genreLabel = new Label("Genre");
         genreLabel.setCursor(Cursor.HAND);
-        genreLabel.setTextFill(Color.WHITE);
+        genreLabel.setTextFill(Color.DARKGRAY);
         genreLabel.setFont(new Font("Segoe UI Thin", 24));
         genreLabel.setOnMouseClicked(mouseEvent -> genreFilterUI());
+        genreLabel.setOnMouseEntered(mouseEvent -> genreLabel.setTextFill(Color.WHITE));
+        genreLabel.setOnMouseExited(mouseEvent -> genreLabel.setTextFill(Color.DARKGRAY));
         Label yearLabel = new Label("Year");
         yearLabel.setCursor(Cursor.HAND);
-        yearLabel.setTextFill(Color.WHITE);
+        yearLabel.setTextFill(Color.DARKGRAY);
         yearLabel.setFont(new Font("Segoe UI Thin", 24));
         yearLabel.setOnMouseClicked(mouseEvent -> yearFilterUI());
+        yearLabel.setOnMouseEntered(mouseEvent -> yearLabel.setTextFill(Color.WHITE));
+        yearLabel.setOnMouseExited(mouseEvent -> yearLabel.setTextFill(Color.DARKGRAY));
         Label scoreLabel = new Label("Score");
         scoreLabel.setCursor(Cursor.HAND);
-        scoreLabel.setTextFill(Color.WHITE);
+        scoreLabel.setTextFill(Color.DARKGRAY);
         scoreLabel.setFont(new Font("Segoe UI Thin", 24));
         scoreLabel.setOnMouseClicked(mouseEvent -> scoreFilterUI());
+        scoreLabel.setOnMouseEntered(mouseEvent -> scoreLabel.setTextFill(Color.WHITE));
+        scoreLabel.setOnMouseExited(mouseEvent -> scoreLabel.setTextFill(Color.DARKGRAY));
         Label APIsearchLabel = new Label("API Search");
         APIsearchLabel.setCursor(Cursor.HAND);
-        APIsearchLabel.setTextFill(Color.WHITE);
+        APIsearchLabel.setTextFill(Color.DARKGRAY);
         APIsearchLabel.setFont(new Font("Segoe UI Thin", 24));
         APIsearchLabel.setOnMouseClicked(mouseEvent -> {searchFilters.clear();searchSource="external";closeMenu();});
+        APIsearchLabel.setOnMouseEntered(mouseEvent -> APIsearchLabel.setTextFill(Color.WHITE));
+        APIsearchLabel.setOnMouseExited(mouseEvent -> APIsearchLabel.setTextFill(Color.DARKGRAY));
         Label clearLabel = new Label("Clear Filters");
         clearLabel.setCursor(Cursor.HAND);
         clearLabel.setTextFill(Color.web("#E08000"));
         clearLabel.setFont(new Font("Segoe UI Thin", 20));
         clearLabel.setOnMouseClicked(mouseEvent -> {searchFilters.clear();searchSource="local";closeMenu();});
+        clearLabel.setOnMouseEntered(mouseEvent -> clearLabel.setTextFill(Color.ORANGE));
+        clearLabel.setOnMouseExited(mouseEvent -> clearLabel.setTextFill(Color.web("#E08000")));
 
         menuList.getChildren().add(movieTVshowLabel);
         menuList.getChildren().add(genreLabel);
@@ -327,10 +364,12 @@ public class BrowsePage implements Page {
         for (int i=2; i<=12; i++) {
             Label lbl = new Label(String.format("%s", 1900+i*10));
             lbl.setCursor(Cursor.HAND);
-            lbl.setTextFill(Color.WHITE);
+            lbl.setTextFill(Color.DARKGRAY);
             lbl.setFont(new Font("Segoe UI Thin", 24));
+            lbl.setOnMouseEntered(mouseEvent -> lbl.setTextFill(Color.WHITE));
+            lbl.setOnMouseExited(mouseEvent -> lbl.setTextFill(Color.DARKGRAY));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("year",String.valueOf(1900+finalI*10));searchSource="local";closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("Year",String.valueOf(190+finalI));searchSource="local";closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -346,9 +385,11 @@ public class BrowsePage implements Page {
         for (String g : genres) {
             Label lbl = new Label(g);
             lbl.setCursor(Cursor.HAND);
-            lbl.setTextFill(Color.WHITE);
+            lbl.setTextFill(Color.DARKGRAY);
             lbl.setFont(new Font("Segoe UI Thin", 24));
-            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("genre",g);searchSource="local";closeMenu();});
+            lbl.setOnMouseEntered(mouseEvent -> lbl.setTextFill(Color.WHITE));
+            lbl.setOnMouseExited(mouseEvent -> lbl.setTextFill(Color.DARKGRAY));
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("Genre",g);searchSource="local";closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -362,12 +403,14 @@ public class BrowsePage implements Page {
         filterTitleLbl.setOnMouseClicked(mouseEvent -> mainMenuItems());
         menuList.getChildren().add(filterTitleLbl);
         for (int i=1; i<=10; i++) {
-            Label lbl = new Label(String.format("[%s / 10]", i));
+            Label lbl = new Label(String.format("%s / 10", i));
             lbl.setCursor(Cursor.HAND);
-            lbl.setTextFill(Color.WHITE);
+            lbl.setTextFill(Color.DARKGRAY);
             lbl.setFont(new Font("Segoe UI Thin", 24));
+            lbl.setOnMouseEntered(mouseEvent -> lbl.setTextFill(Color.WHITE));
+            lbl.setOnMouseExited(mouseEvent -> lbl.setTextFill(Color.DARKGRAY));
             int finalI = i;
-            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("score",String.valueOf(finalI));searchSource="local";closeMenu();});
+            lbl.setOnMouseClicked(mouseEvent -> {searchFilters.put("Score",String.valueOf(finalI)+",");searchSource="local";closeMenu();});
             menuList.getChildren().add(lbl);
         }
     }
@@ -402,7 +445,80 @@ public class BrowsePage implements Page {
                 result.getOverviews().containsKey("eng"));
     }
 
-    private CoverImage addCoverElement(TVDBResult result) {
+    private ArrayList<MovieContent> parseMovieResult(ResultSet results) {
+        try {
+            System.out.println(results.next());
+            System.out.println(results.getString("Title"));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        ArrayList movies = new ArrayList();
+        try {
+            while (results.next()) {
+                System.out.println("MOVIE2");
+                ObjectMapper mapper = new ObjectMapper();
+                MovieContent movie = new MovieContent(
+                        results.getString("MovieID"),
+                        results.getString("Title"),
+                        results.getString("Summary"),
+                        results.getString("Length"),
+                        Float.parseFloat(results.getString("Score").replace(',', '.')),
+                        Integer.parseInt(results.getString("Year")),
+                        results.getString("Genres").split(", "),
+                        mapper.readValue(results.getString("Writers"), String[].class),
+                        mapper.readValue(results.getString("Stars"), String[].class),
+                        mapper.readValue(results.getString("IMAGE"), byte[].class),
+                        results.getString("Trailer")
+                );
+                movies.add(movie);
+                System.out.println(movie.getTitle());
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return movies;
+    }
+
+    private ArrayList<SeriesContent> parseSeriesResult(ResultSet results) {
+        ArrayList movies = new ArrayList();
+        Pattern regx = Pattern.compile("(\\d\\d\\d\\d)");
+
+            try {
+            while (results.next()) {
+                ObjectMapper mapper = new ObjectMapper();
+                Matcher m = regx.matcher(results.getString("Year"));
+                SeriesContent movie = new SeriesContent(
+                        results.getString("ShowID"),
+                        results.getString("Title"),
+                        results.getString("Summary"),
+                        results.getString("Length"),
+                        Float.parseFloat(results.getString("Score").replace(',', '.')),
+                        (m.find() ? Integer.parseInt(m.group(0)) : 0),
+                        (m.find() ? Integer.parseInt(m.group(0)) : 0),
+                        results.getString("Genres").split(", "),
+                        mapper.readValue(results.getString("Writers"), String[].class),
+                        mapper.readValue(results.getString("Stars"), String[].class),
+                        mapper.readValue(results.getString("IMAGE"), byte[].class),
+                        mapper.readValue(results.getString("Seasons"), String[][].class)
+                );
+                movies.add(movie);
+
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return movies;
+    }
+
+    private CoverImage addCoverElement(Content result) {
         CoverImage imgView = new CoverImage(new Image("placeholder.png"), result);
         imgView.setPreserveRatio(true);
         imgView.setFitWidth(250);
