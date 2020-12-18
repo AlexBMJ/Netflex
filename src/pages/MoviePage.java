@@ -39,6 +39,7 @@ public class MoviePage implements Page {
         final ImageView logo = new ImageView("netflex_logo.png");
         backButton.setPreserveRatio(true);
         backButton.setFitHeight(40);
+        backButton.setVisible(true);
         backButtonPane.setCursor(Cursor.HAND);
         logo.setPreserveRatio(true);
         logo.setFitHeight(40);
@@ -122,7 +123,7 @@ public class MoviePage implements Page {
 
         // Cover, Trailer Container
         HBox hbox2 = new HBox();
-        hbox2.setAlignment(Pos.CENTER);
+        hbox2.setAlignment(Pos.CENTER_LEFT);
         mainBox.getChildren().add(hbox2);
 
         // Cover

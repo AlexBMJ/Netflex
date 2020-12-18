@@ -430,7 +430,6 @@ public class BrowsePage implements Page {
             else if (entry.getKey() == "Genre")
                 parsedFilters.put(entry.getKey(), entry.getValue());
         }
-        System.out.println(parsedFilters);
         return parsedFilters;
     }
 

@@ -26,6 +26,7 @@ public class PageHandler {
         this.currentPage = page;
         stage.setScene(this.currentPage.getScene());
         stage.show();
+        stage.setHeight(stage.getHeight()-1);
     }
 
     public void prevPage() throws PageCacheException {
@@ -33,6 +34,7 @@ public class PageHandler {
             this.currentPage = pageCache.pop();
             stage.setScene(this.currentPage.getScene());
             stage.show();
+            stage.setHeight(stage.getHeight()+1);
         } else {
             throw new PageCacheException("No more pages");
         }
