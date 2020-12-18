@@ -9,10 +9,10 @@ import content.SeriesContent;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class SearchDatabase {
 
@@ -29,19 +29,24 @@ public class SearchDatabase {
     }
 
     public static ArrayList search(String searchTerm, String type, HashMap<String, String> searchFilters) {
-        String sql = String.format("SELECT * FROM %s WHERE (Title LIKE ?", type);
-        for (int i=0;i<searchFilters.keySet().size();i++)
-            sql = String.format("%s AND %s LIKE %s", sql, "?", "?");
-        sql = String.format("%s) LIMIT 0, 50", sql);
+        String sql = String.format("SELECT * FROM %s", type);
 
-        try (PreparedStatement pstmt  = SearchDatabase.db.conn.prepareStatement(sql)){
-            pstmt.setString(1,String.format("%%%s%%",searchTerm));
-            int paramIndex = 2;
-            for (Map.Entry<String, String> filter : searchFilters.entrySet()) {
-                pstmt.setString(paramIndex, filter.getKey());
-                pstmt.setString(paramIndex+1, String.format("%%%s%%",filter.getValue()));
-                paramIndex++;
-            }
+        TreeMap<String, String> orderedMap = new TreeMap();
+        orderedMap.putAll(searchFilters);
+        ArrayList<String> sqlFilter = new ArrayList();
+        if (searchTerm.length() > 0)
+            orderedMap.put("Title", searchTerm);
+        for (String key : orderedMap.keySet())
+            sqlFilter.add(key + " LIKE ?");
+        if (sqlFilter.size() > 0)
+            sql += String.format(" WHERE (%s) LIMIT 0, 50", sqlFilter.stream().collect(Collectors.joining(" AND ")));
+        else
+            sql += " LIMIT 0, 50";
+
+        try (PreparedStatement pstmt  = SearchDatabase.db.conn.prepareStatement(sql)) {
+            for (int i=0;i<orderedMap.size();i++)
+                pstmt.setString(i+1, String.format("%%%s%%",orderedMap.get(sqlFilter.get(i).replaceAll(" LIKE \\?", ""))));
+
             ResultSet results = pstmt.executeQuery();
             ArrayList contentList = new ArrayList();
             if (type == "Movies") {
@@ -72,7 +77,6 @@ public class SearchDatabase {
                 }
             } else if (type == "Shows") {
                 Pattern regx = Pattern.compile("(\\d\\d\\d\\d)");
-
                 try {
                     while (results.next()) {
                         ObjectMapper mapper = new ObjectMapper();
@@ -92,7 +96,6 @@ public class SearchDatabase {
                                 mapper.readValue(results.getString("Seasons"), TreeMap.class)
                         );
                         contentList.add(show);
-
                     }
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();

@@ -38,7 +38,7 @@ public class PageHandler {
         }
     }
 
-    public static PageHandler get() {
+    public static PageHandler getInstance() {
         return pageHandler;
     }
 

@@ -1,9 +1,6 @@
 package pages;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import content.*;
 import database.AlgoliaAPI;
 import database.SearchDatabase;
@@ -12,7 +9,6 @@ import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -20,29 +16,19 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import pages.components.CoverImage;
 
-import java.lang.ref.Cleaner;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BrowsePage implements Page {
     final private String[] genres = {"Crime", "Drama", "Biography", "History", "Sport", "Romance", "War", "Mystery", "Adventure", "Family", "Fantasy", "Thriller", "Horror", "Film-Noir", "Musical", "Sci-fi", "Comedy", "Action", "Western"};
@@ -55,7 +41,7 @@ public class BrowsePage implements Page {
     private String[] prevSearchTerm = {"", "Movie"};
     private Timeline searchDelay = new Timeline(
             new KeyFrame(Duration.seconds(1),
-                    event -> searchAPI()));
+                    event -> search()));
 
     FadeTransition fadeOutTransition = new FadeTransition();
     TranslateTransition closeMenuTransition = new TranslateTransition();
@@ -73,13 +59,13 @@ public class BrowsePage implements Page {
         int actualHits = 0;
         if (searchSource == "local") {
             String type = (prevSearchTerm[1] == "Movie" ? "Movies" : "Shows");
-            ArrayList<LocalContent> results = SearchDatabase.search(prevSearchTerm[0], type, searchFilters);
+            ArrayList<LocalContent> results = SearchDatabase.search(prevSearchTerm[0], type, getParsedSearchFilters());
             for (LocalContent movie : results) {
                 actualHits++;
                 Platform.runLater(() -> coverList.add(addCoverElement(movie)));
             }
         } else if (searchSource == "external") {
-            List<TVDBResult> hits = AlgoliaAPI.getSeriesHits(prevSearchTerm[0], prevSearchTerm[1], 30);
+            List<TVDBResult> hits = AlgoliaAPI.getSeriesHits((prevSearchTerm[0] == "" ? "the" : prevSearchTerm[0]), prevSearchTerm[1], 30);
             for (TVDBResult result : hits)
                 if (isValidAPIData(result)) {
                     actualHits++;
@@ -114,7 +100,7 @@ public class BrowsePage implements Page {
         final VBox root = new VBox();
         root.setFillWidth(true);
         root.setAlignment(Pos.TOP_LEFT);
-        root.setStyle("-fx-background-color: rgb(90,30,30);");
+        root.setStyle("-fx-background-color: rgb(30,30,30);");
 
         // Header
         final GridPane gp1 = new GridPane();
@@ -414,19 +400,15 @@ public class BrowsePage implements Page {
         searchDelay.play();
     }
 
-    private void searchAPI() {
+    private void search() {
         String searchTerm = searchField.getText();
         String searchType = (movieSearch ? "Movie" : "TV");
-        if (searchTerm.length() > 1)
-            if (!prevSearchTerm[0].equals(searchTerm) || !prevSearchTerm[1].equals(searchType)) {
-                prevSearchTerm[0] = searchTerm;
-                prevSearchTerm[1] = searchType;
-                flowPane.getChildren().clear();
-                Thread t = new Thread(searchRun);
-                t.setDaemon(true);
-                t.start();
-            } else
-                loadingGif.setVisible(false);
+        prevSearchTerm[0] = searchTerm;
+        prevSearchTerm[1] = searchType;
+        flowPane.getChildren().clear();
+        Thread t = new Thread(searchRun);
+        t.setDaemon(true);
+        t.start();
     }
 
     private boolean isValidAPIData(TVDBResult result) {
@@ -436,6 +418,20 @@ public class BrowsePage implements Page {
                 !result.getImage().equals("https://artworks.thetvdb.com/banners/images/missing/series.jpg") &&
                 result.getOverviews() != null &&
                 result.getOverviews().containsKey("eng"));
+    }
+
+    private HashMap<String, String> getParsedSearchFilters() {
+        HashMap parsedFilters = new HashMap();
+        for (Map.Entry<String, String> entry : searchFilters.entrySet()) {
+            if (entry.getKey() == "Year")
+                parsedFilters.put(entry.getKey(), entry.getValue().substring(0,3));
+            else if (entry.getKey() == "Score")
+                parsedFilters.put(entry.getKey(), entry.getValue()+",");
+            else if (entry.getKey() == "Genre")
+                parsedFilters.put(entry.getKey(), entry.getValue());
+        }
+        System.out.println(parsedFilters);
+        return parsedFilters;
     }
 
     private CoverImage addCoverElement(Content result) {
@@ -460,6 +456,10 @@ public class BrowsePage implements Page {
 
         imgView.setOnMouseEntered(MouseEvent -> scaleUpTransition.play());
         imgView.setOnMouseExited(MouseEvent -> scaleDownTransition.play());
+        imgView.setOnMouseClicked(MouseEvent -> {
+            if (imgView.getInfo() instanceof MovieContent)
+                PageHandler.getInstance().addPage(new MoviePage((MovieContent)imgView.getInfo()));
+        });
         flowPane.getChildren().add(imgView);
         return imgView;
     }
@@ -472,6 +472,7 @@ public class BrowsePage implements Page {
         flowPane.getChildren().add(lbl);
     }
 
+    @Override
     public Scene getScene() {
         return scene;
     }

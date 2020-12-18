@@ -23,12 +23,12 @@ public class LoginPage implements Page {
         text.setText("LOGIN PAGE");
 
         switchPage.setOnMouseClicked(mouseEvent -> {
-            PageHandler.get().addPage(new BrowsePage());
+            PageHandler.getInstance().addPage(new BrowsePage());
         });
 
         backButton.setOnMouseClicked(mouseEvent -> {
             try {
-                PageHandler.get().prevPage();
+                PageHandler.getInstance().prevPage();
             } catch (PageCacheException e) {
                 System.out.println(e.getMessage());
             }
