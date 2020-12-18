@@ -11,9 +11,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -58,8 +56,7 @@ public class BrowsePage implements Page {
 
         int actualHits = 0;
         if (searchSource == "local") {
-            String type = (prevSearchTerm[1] == "Movie" ? "Movies" : "Shows");
-            ArrayList<LocalContent> results = SearchDatabase.search(prevSearchTerm[0], type, getParsedSearchFilters());
+            ArrayList<LocalContent> results = StreamingService.getInstance().search(prevSearchTerm[0], prevSearchTerm[1], getParsedSearchFilters());
             for (LocalContent movie : results) {
                 actualHits++;
                 Platform.runLater(() -> coverList.add(addCoverElement(movie)));
@@ -93,9 +90,6 @@ public class BrowsePage implements Page {
     };
 
     public BrowsePage() {
-        //Initilaize DB
-        SearchDatabase.connect();
-
         // Root
         final VBox root = new VBox();
         root.setFillWidth(true);
@@ -430,7 +424,6 @@ public class BrowsePage implements Page {
             else if (entry.getKey() == "Genre")
                 parsedFilters.put(entry.getKey(), entry.getValue());
         }
-        System.out.println(parsedFilters);
         return parsedFilters;
     }
 
@@ -458,7 +451,17 @@ public class BrowsePage implements Page {
         imgView.setOnMouseExited(MouseEvent -> scaleDownTransition.play());
         imgView.setOnMouseClicked(MouseEvent -> {
             if (imgView.getInfo() instanceof MovieContent)
-                PageHandler.getInstance().addPage(new MoviePage((MovieContent)imgView.getInfo()));
+                StreamingService.getInstance().addPage(new MoviePage((MovieContent)imgView.getInfo()));
+            else if (imgView.getInfo() instanceof SeriesContent)
+                StreamingService.getInstance().addPage(new SeriesPage((SeriesContent)imgView.getInfo()));
+            else if (imgView.getInfo() instanceof ExternalContent)
+                StreamingService.getInstance().addPage(new ExternalPage((ExternalContent)imgView.getInfo()));
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Cannot find data for content!");
+                alert.showAndWait()
+                        .filter(response -> response == ButtonType.OK)
+                        .ifPresent(response -> alert.close());
+            }
         });
         flowPane.getChildren().add(imgView);
         return imgView;

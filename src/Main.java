@@ -1,16 +1,9 @@
-import content.LocalContent;
-import content.MovieContent;
-import database.Database;
-import database.SearchDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import pages.BrowsePage;
-import pages.MoviePage;
-import pages.PageHandler;
-
-import java.util.HashMap;
+import pages.StreamingService;
 
 public class Main extends Application {
     @Override
@@ -23,7 +16,7 @@ public class Main extends Application {
             Platform.exit();
             System.exit(0);
         });
-        PageHandler window = PageHandler.create(stage, 10);
+        StreamingService window = StreamingService.create(stage, 10);
         window.addPage(new BrowsePage());
     }
 

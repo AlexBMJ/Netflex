@@ -3,6 +3,7 @@ package database;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import content.EpisodeContent;
 import content.MovieContent;
 import content.SeriesContent;
 
@@ -15,11 +16,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SearchDatabase {
-
-    private static SearchDatabase db;
     public Connection conn;
 
-    private SearchDatabase() {
+    public SearchDatabase() {
         String url = "jdbc:sqlite:Netflex.db";
         try {
             conn = DriverManager.getConnection(url);
@@ -28,8 +27,8 @@ public class SearchDatabase {
         }
     }
 
-    public static ArrayList search(String searchTerm, String type, HashMap<String, String> searchFilters) {
-        String sql = String.format("SELECT * FROM %s", type);
+    public ArrayList search(String searchTerm, String table, HashMap<String, String> searchFilters, boolean precise) throws SQLException, JsonProcessingException{
+        String sql = String.format("SELECT * FROM %s", table);
 
         TreeMap<String, String> orderedMap = new TreeMap();
         orderedMap.putAll(searchFilters);
@@ -39,86 +38,76 @@ public class SearchDatabase {
         for (String key : orderedMap.keySet())
             sqlFilter.add(key + " LIKE ?");
         if (sqlFilter.size() > 0)
-            sql += String.format(" WHERE (%s) LIMIT 0, 50", sqlFilter.stream().collect(Collectors.joining(" AND ")));
+            sql += String.format(" WHERE (%s)", sqlFilter.stream().collect(Collectors.joining(" AND ")));
+        if (precise)
+            sql += " ORDER BY EpisodeNumber ASC";
         else
             sql += " LIMIT 0, 50";
 
-        try (PreparedStatement pstmt  = SearchDatabase.db.conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt  = conn.prepareStatement(sql)) {
             for (int i=0;i<orderedMap.size();i++)
-                pstmt.setString(i+1, String.format("%%%s%%",orderedMap.get(sqlFilter.get(i).replaceAll(" LIKE \\?", ""))));
+                pstmt.setString(i+1, String.format("%s%s%s",(precise ? "" : "%"), orderedMap.get(sqlFilter.get(i).replaceAll(" LIKE \\?", "")),(precise ? "" : "%")));
 
             ResultSet results = pstmt.executeQuery();
             ArrayList contentList = new ArrayList();
-            if (type == "Movies") {
-                try {
-                    while (results.next()) {
-                        ObjectMapper mapper = new ObjectMapper();
-                        MovieContent movie = new MovieContent(
-                                results.getString("MovieID"),
-                                results.getString("Title"),
-                                results.getString("Summary"),
-                                results.getString("Length"),
-                                Float.parseFloat(results.getString("Score").replace(',', '.')),
-                                Integer.parseInt(results.getString("Year")),
-                                results.getString("Genre").split(", "),
-                                mapper.readValue(results.getString("Writers"), String[].class),
-                                mapper.readValue(results.getString("Stars"), String[].class),
-                                results.getBytes("IMAGE"),
-                                results.getString("Trailer")
-                        );
-                        contentList.add(movie);
-                    }
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                } catch (JsonMappingException e) {
-                    e.printStackTrace();
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+            if (table == "Movies") {
+                while (results.next()) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    MovieContent movie = new MovieContent(
+                            results.getString("MovieID"),
+                            results.getString("Title"),
+                            results.getString("Summary"),
+                            results.getString("Length"),
+                            Float.parseFloat(results.getString("Score").replace(',', '.')),
+                            Integer.parseInt(results.getString("Year")),
+                            results.getString("Genre").split(", "),
+                            mapper.readValue(results.getString("Writers"), String[].class),
+                            mapper.readValue(results.getString("Stars"), String[].class),
+                            results.getBytes("IMAGE"),
+                            results.getString("Trailer")
+                    );
+                    contentList.add(movie);
                 }
-            } else if (type == "Shows") {
+            } else if (table == "Shows") {
                 Pattern regx = Pattern.compile("(\\d\\d\\d\\d)");
-                try {
-                    while (results.next()) {
-                        ObjectMapper mapper = new ObjectMapper();
-                        Matcher m = regx.matcher(results.getString("Year"));
-                        SeriesContent show = new SeriesContent(
-                                results.getString("ShowID"),
-                                results.getString("Title"),
-                                results.getString("Summary"),
-                                results.getString("Length"),
-                                Float.parseFloat(results.getString("Score").replace(',', '.')),
-                                (m.find() ? Integer.parseInt(m.group(0)) : 0),
-                                (m.find() ? Integer.parseInt(m.group(0)) : 0),
-                                results.getString("Genre").split(", "),
-                                mapper.readValue((results.getString("Writers") == null ? "[]" : results.getString("Writers")), String[].class),
-                                mapper.readValue((results.getString("Stars") == null ? "[]" : results.getString("Stars")), String[].class),
-                                results.getBytes("IMAGE"),
-                                mapper.readValue(results.getString("Seasons"), TreeMap.class)
-                        );
-                        contentList.add(show);
-                    }
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                } catch (JsonMappingException e) {
-                    e.printStackTrace();
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                while (results.next()) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    Matcher m = regx.matcher(results.getString("Year"));
+                    SeriesContent show = new SeriesContent(
+                            results.getString("ShowID"),
+                            results.getString("Title"),
+                            results.getString("Summary"),
+                            results.getString("Length"),
+                            Float.parseFloat(results.getString("Score").replace(',', '.')),
+                            (m.find() ? Integer.parseInt(m.group(0)) : 0),
+                            (m.find() ? Integer.parseInt(m.group(0)) : 0),
+                            results.getString("Genre").split(", "),
+                            mapper.readValue((results.getString("Writers") == null ? "[]" : results.getString("Writers")), String[].class),
+                            mapper.readValue((results.getString("Stars") == null ? "[]" : results.getString("Stars")), String[].class),
+                            results.getBytes("IMAGE"),
+                            mapper.readValue(results.getString("Seasons"), TreeMap.class)
+                    );
+                    contentList.add(show);
                 }
-            } else if (type == "Episodes") {
-
-            } else return null;
+            } else if (table == "Episodes") {
+                while (results.next()) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    EpisodeContent episode = new EpisodeContent(
+                            results.getString("EpisodeID"),
+                            results.getString("Title"),
+                            results.getString("Summary"),
+                            results.getString("Length"),
+                            mapper.readValue((results.getString("Writers") == null ? "[]" : results.getString("Writers")), String[].class),
+                            mapper.readValue((results.getString("Stars") == null ? "[]" : results.getString("Stars")), String[].class),
+                            results.getBytes("IMAGE"),
+                            results.getString("ShowID"),
+                            Integer.parseInt(results.getString("EpisodeNumber")),
+                            Integer.parseInt(results.getString("Season"))
+                    );
+                    contentList.add(episode);
+                }
+            }
             return contentList;
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return null;
         }
-    }
-
-    public static SearchDatabase connect() {
-        // SQLite SearchDatabase Singleton
-        if (db == null) {
-            db = new SearchDatabase();
-        }
-        return db;
     }
 }

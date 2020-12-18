@@ -6,6 +6,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BlendMode;
@@ -21,11 +23,13 @@ import java.util.stream.Collectors;
 
 public class MoviePage implements Page {
     private Scene scene;
+    private MovieContent movie;
 
     final Label searchFilterLabel = new Label("");
     final ImageView loadingGif = new ImageView("loading_medium.gif");
 
     public MoviePage(MovieContent movie) {
+        this.movie = movie;
         // Root
         final VBox root = new VBox();
         root.setFillWidth(true);
@@ -195,9 +199,12 @@ public class MoviePage implements Page {
         backButtonPane.setOnMouseClicked(mouseEvent -> {
             try {
                 trailer.getEngine().reload();
-                PageHandler.getInstance().prevPage();
+                StreamingService.getInstance().prevPage();
             } catch (PageCacheException e) {
-                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No more previous pages!");
+                alert.showAndWait()
+                        .filter(response -> response == ButtonType.OK)
+                        .ifPresent(response -> alert.close());
             }
         });
 
