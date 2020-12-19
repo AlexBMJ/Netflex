@@ -454,20 +454,19 @@ public class BrowsePage implements Page {
 
         imgView.setOnMouseEntered(MouseEvent -> scaleUpTransition.play());
         imgView.setOnMouseExited(MouseEvent -> scaleDownTransition.play());
-        imgView.setOnMouseClicked(MouseEvent -> {
-            if (imgView.getInfo() instanceof MovieContent)
-                StreamingService.getInstance().addPage(new MoviePage((MovieContent)imgView.getInfo()));
-            else if (imgView.getInfo() instanceof SeriesContent)
-                StreamingService.getInstance().addPage(new SeriesPage((SeriesContent)imgView.getInfo()));
-            else if (imgView.getInfo() instanceof ExternalContent)
-                StreamingService.getInstance().addPage(new ExternalPage((ExternalContent)imgView.getInfo()));
-            else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Cannot find data for content!");
-                alert.showAndWait()
-                        .filter(response -> response == ButtonType.OK)
-                        .ifPresent(response -> alert.close());
-            }
-        });
+
+        if (imgView.getInfo() instanceof MovieContent)
+            imgView.setOnMouseClicked(MouseEvent ->
+                    StreamingService.getInstance().addPage(new MoviePage((MovieContent)imgView.getInfo())));
+        else if (imgView.getInfo() instanceof SeriesContent)
+            imgView.setOnMouseClicked(MouseEvent ->
+                    StreamingService.getInstance().addPage(new SeriesPage((SeriesContent)imgView.getInfo())));
+        else if (imgView.getInfo() instanceof ExternalContent)
+            imgView.setOnMouseClicked(MouseEvent ->
+                    StreamingService.getInstance().addPage(new ExternalPage((ExternalContent)imgView.getInfo())));
+        else
+            showErrorMessage("Cannot find data for content!");
+
         flowPane.getChildren().add(imgView);
     }
 
