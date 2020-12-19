@@ -455,15 +455,15 @@ public class BrowsePage implements Page {
         imgView.setOnMouseEntered(MouseEvent -> scaleUpTransition.play());
         imgView.setOnMouseExited(MouseEvent -> scaleDownTransition.play());
 
-        if (imgView.getInfo() instanceof MovieContent)
+        if (result instanceof MovieContent)
             imgView.setOnMouseClicked(MouseEvent ->
-                    StreamingService.getInstance().addPage(new MoviePage((MovieContent)imgView.getInfo())));
-        else if (imgView.getInfo() instanceof SeriesContent)
+                    StreamingService.getInstance().addPage(new MoviePage((MovieContent)result)));
+        else if (result instanceof SeriesContent)
             imgView.setOnMouseClicked(MouseEvent ->
-                    StreamingService.getInstance().addPage(new SeriesPage((SeriesContent)imgView.getInfo())));
-        else if (imgView.getInfo() instanceof ExternalContent)
+                    StreamingService.getInstance().addPage(new SeriesPage((SeriesContent)result)));
+        else if (result instanceof ExternalContent)
             imgView.setOnMouseClicked(MouseEvent ->
-                    StreamingService.getInstance().addPage(new ExternalPage((ExternalContent)imgView.getInfo())));
+                    StreamingService.getInstance().addPage(new ExternalPage((ExternalContent)result)));
         else
             showErrorMessage("Cannot find data for content!");
 
