@@ -195,7 +195,7 @@ public class MoviePage implements Page {
                 trailer.getEngine().reload();
                 StreamingService.getInstance().prevPage();
             } catch (PageCacheException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No more previous com.example.netflex.pages!");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No more previous pages!");
                 alert.showAndWait()
                         .filter(response -> response == ButtonType.OK)
                         .ifPresent(response -> alert.close());

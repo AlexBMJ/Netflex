@@ -57,7 +57,7 @@ public class StreamingService {
                 stage.setHeight(stage.getHeight()+1);
             stage.show();
         } else {
-            throw new PageCacheException("No more com.example.netflex.pages");
+            throw new PageCacheException("No more cached pages");
         }
     }
 

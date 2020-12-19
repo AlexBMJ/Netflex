@@ -142,7 +142,7 @@ class IMDBscraper:
 
 
 	def _get_id(self):
-		raw_response = requests.get(f'https://www.imdb.com/find?q={self.name} {self.year}&s=tt&ttype={self.search_type}').com.example.netflex.content
+		raw_response = requests.get(f'https://www.imdb.com/find?q={self.name} {self.year}&s=tt&ttype={self.search_type}').content
 		regex = re.search(f'<a href=\"/title/(tt\d+)/\" >[^<]+</a> \({self.year}\)', raw_response.decode())
 		if regex:
 			return regex.group(1)
@@ -151,7 +151,7 @@ class IMDBscraper:
 	def _get_page(self):
 		raw_response = requests.get(f'https://www.imdb.com/title/{self.id}')
 		if raw_response.status_code == 200:
-			return BeautifulSoup(raw_response.com.example.netflex.content.decode(), "html.parser")
+			return BeautifulSoup(raw_response.content.decode(), "html.parser")
 		raise Exception(f"Could not find page for {self.id}")
 
 	def _get_slate_wrapper(self):
@@ -165,7 +165,7 @@ class IMDBscraper:
 
 	def _get_poster_url(self):
 		poster_dir = self.slate.find("div", class_="poster").a['href']
-		raw_response = requests.get(f'https://www.imdb.com{poster_dir}').com.example.netflex.content
+		raw_response = requests.get(f'https://www.imdb.com{poster_dir}').content
 		soup = BeautifulSoup(raw_response.decode(), "html.parser")
 		img_url = soup.find("img", attrs={"data-image-id": f"{poster_dir.split('/')[-1]}-curr"})
 		if img_url and img_url['src']:
@@ -185,7 +185,7 @@ class IMDBscraper:
 		raw_response = requests.get("https://html.duckduckgo.com/html/", params=[("q", f"{name} {year} Trailer site:youtube.com")], headers=headers)
 		if raw_response.status_code != 200:
 			raise Exception(f"Throttled...")
-		soup = BeautifulSoup(raw_response.com.example.netflex.content.decode(), "html.parser")
+		soup = BeautifulSoup(raw_response.content.decode(), "html.parser")
 		video_url = soup.find("a", class_="result__a")
 		if video_url and video_url['href']:
 			return video_url['href']
@@ -203,9 +203,9 @@ class IMDBscraper:
 		if tag:
 			summary_text = ''.join(tag.find_all(text=True, recursive=True)).strip()
 			if "See full summary" in summary_text:
-				raw_response = requests.get(f'https://www.imdb.com/title/{self.id}/plotsummary').com.example.netflex.content
+				raw_response = requests.get(f'https://www.imdb.com/title/{self.id}/plotsummary').content
 				soup = BeautifulSoup(raw_response.decode(), "html.parser")
-				full_summary = soup.find("ul", id="plot-summaries-com.example.netflex.content")
+				full_summary = soup.find("ul", id="plot-summaries-content")
 				if full_summary and full_summary.li.p:
 					return ''.join(full_summary.li.p.find_all(text=True, recursive=True)).strip()
 			else:
@@ -249,7 +249,7 @@ class IMDBscraper:
 	def _get_num_seasons(self):
 		raw_response = requests.get(f"https://www.imdb.com/title/{self.id}/episodes?season=1")
 		if raw_response.status_code == 200:
-			soup = BeautifulSoup(raw_response.com.example.netflex.content.decode(), "html.parser")
+			soup = BeautifulSoup(raw_response.content.decode(), "html.parser")
 			dropdown = soup.find("select", id="bySeason", class_="current", tconst=self.id)
 			if dropdown:
 				return len(dropdown.find_all("option"))
@@ -258,7 +258,7 @@ class IMDBscraper:
 	def _get_episodes(self, season):
 		raw_response = requests.get(f"https://www.imdb.com/title/{self.id}/episodes?season={season}")
 		if raw_response.status_code == 200:
-			soup = BeautifulSoup(raw_response.com.example.netflex.content.decode(), "html.parser")
+			soup = BeautifulSoup(raw_response.content.decode(), "html.parser")
 			eps = []
 			for ep_num, ep_element in enumerate(soup.find("div", class_="list detail eplist").find_all("div", class_="list_item")):
 				#print(ep_num+1, re.findall(r"Ep\d+", ep_element.div.a.div.div.string))

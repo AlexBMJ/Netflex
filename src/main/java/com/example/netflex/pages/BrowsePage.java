@@ -458,7 +458,7 @@ public class BrowsePage implements Page {
             imgView.setOnMouseClicked(MouseEvent ->
                     StreamingService.getInstance().addPage(new ExternalPage((ExternalContent)result)));
         else
-            StreamingService.getInstance().showErrorMessage("Cannot find data for com.example.netflex.content!");
+            StreamingService.getInstance().showErrorMessage("Cannot find data for content!");
 
         flowPane.getChildren().add(imgView);
     }
