@@ -10,16 +10,21 @@ public class CoverImage extends ImageView {
 
     private Content MovieInfo;
     private float aspectRatio;
+    private boolean imageLoaded;
 
     public CoverImage(Image img, Content result, float aspectRatio) {
         super(img);
-        MovieInfo = result;
+        this.MovieInfo = result;
+        this.imageLoaded = false;
         this.aspectRatio = aspectRatio;
     }
 
-    public Content getInfo() {return MovieInfo;}
+    public Content getInfo() { return MovieInfo; }
+
+    public boolean isImageLoaded() { return imageLoaded; }
 
     public Runnable fetchImage = () -> {
+        imageLoaded = true;
         Image image = MovieInfo.getImage();
         int[] cropSize = cropAspectRatio(image);
         Rectangle2D croppedPortion = new Rectangle2D(cropSize[0], cropSize[1], cropSize[2], cropSize[3]);

@@ -1,7 +1,6 @@
 package database;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import content.EpisodeContent;
 import content.MovieContent;
@@ -27,14 +26,13 @@ public class SearchDatabase {
         }
     }
 
-    public ArrayList search(String searchTerm, String table, HashMap<String, String> searchFilters, boolean precise) throws SQLException, JsonProcessingException{
+    public ArrayList search(String table, HashMap<String, String> searchFilters, boolean precise) throws SQLException, JsonProcessingException{
         String sql = String.format("SELECT * FROM %s", table);
 
         TreeMap<String, String> orderedMap = new TreeMap();
         orderedMap.putAll(searchFilters);
+
         ArrayList<String> sqlFilter = new ArrayList();
-        if (searchTerm.length() > 0)
-            orderedMap.put("Title", searchTerm);
         for (String key : orderedMap.keySet())
             sqlFilter.add(key + " LIKE ?");
         if (sqlFilter.size() > 0)
@@ -46,7 +44,7 @@ public class SearchDatabase {
 
         try (PreparedStatement pstmt  = conn.prepareStatement(sql)) {
             for (int i=0;i<orderedMap.size();i++)
-                pstmt.setString(i+1, String.format("%s%s%s",(precise ? "" : "%"), orderedMap.get(sqlFilter.get(i).replaceAll(" LIKE \\?", "")),(precise ? "" : "%")));
+                pstmt.setString(i+1, String.format("%2$s%1$s%2$s", orderedMap.get(sqlFilter.get(i).replaceAll(" LIKE \\?", "")),(precise ? "" : "%")));
 
             ResultSet results = pstmt.executeQuery();
             ArrayList contentList = new ArrayList();

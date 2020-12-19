@@ -80,7 +80,7 @@ public class MoviePage implements Page {
         VBox mainBox = new VBox();
         mainBox.setStyle("-fx-background-color: rgb(30,30,30);");
         mainBox.setFillWidth(true);
-        mainBox.setAlignment(Pos.TOP_LEFT);
+        mainBox.setAlignment(Pos.TOP_CENTER);
         scrollPane.setContent(mainBox);
         scrollPane.setStyle("-fx-background-color: rgb(30,30,30);");
         scrollPane.getStyleClass().add("scrollPane");
@@ -93,7 +93,7 @@ public class MoviePage implements Page {
         HBox hbox1 = new HBox();
         hbox1.setSpacing(10);
         VBox.setMargin(hbox1, new Insets(20,20,0,20));
-        hbox1.setAlignment(Pos.TOP_LEFT);
+        hbox1.setAlignment(Pos.TOP_CENTER);
         mainBox.getChildren().add(hbox1);
 
         // Title
@@ -152,40 +152,33 @@ public class MoviePage implements Page {
         webAP.getChildren().add(trailer);
         hbox2.getChildren().add(webAP);
 
-
-        // container 3
-        HBox hbox3 = new HBox();
-        hbox3.setAlignment(Pos.TOP_CENTER);
-        hbox3.setSpacing(20);
-        mainBox.getChildren().add(hbox3);
-
         // Summary
         Text summaryText = new Text(movie.getSummary());
-        VBox.setMargin(hbox3, new Insets(20));
+        VBox.setMargin(mainBox, new Insets(20));
         summaryText.setWrappingWidth(450);
         summaryText.setFill(Color.DARKGRAY);
         summaryText.setFont(new Font("Segoe UI", 20));
-        hbox3.getChildren().add(summaryText);
+        mainBox.getChildren().add(summaryText);
 
         // People
         Text stars = new Text("Starring: " + Arrays.asList(movie.getStars()).stream().collect(Collectors.joining(",\r               ")));
         VBox.setMargin(stars, new Insets(20));
         stars.setFill(Color.DARKGRAY);
         stars.setFont(new Font("Segoe UI", 20));
-        hbox3.getChildren().add(stars);
+        mainBox.getChildren().add(stars);
 
         Text writers = new Text("Writers: " + Arrays.asList(movie.getWriters()).stream().collect(Collectors.joining(",\r             ")));
         VBox.setMargin(writers, new Insets(20));
         writers.setFill(Color.DARKGRAY);
         writers.setFont(new Font("Segoe UI", 20));
-        hbox3.getChildren().add(writers);
+        mainBox.getChildren().add(writers);
 
         // Genres
         Text genreText = new Text(Arrays.asList(movie.getGenres()).stream().collect(Collectors.joining("\r")));
         VBox.setMargin(genreText, new Insets(20));
         genreText.setFill(Color.DARKGRAY);
         genreText.setFont(new Font("Segoe UI", 20));
-        hbox3.getChildren().add(genreText);
+        mainBox.getChildren().add(genreText);
 
         // Loading Image
         loadingGif.setBlendMode(BlendMode.SCREEN);

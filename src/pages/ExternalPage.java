@@ -89,7 +89,7 @@ public class ExternalPage implements Page {
         HBox hbox1 = new HBox();
         hbox1.setSpacing(10);
         VBox.setMargin(hbox1, new Insets(20,20,0,20));
-        hbox1.setAlignment(Pos.TOP_LEFT);
+        hbox1.setAlignment(Pos.TOP_CENTER);
         mainBox.getChildren().add(hbox1);
 
         // Title

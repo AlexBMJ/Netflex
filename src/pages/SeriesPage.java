@@ -1,5 +1,6 @@
 package pages;
 
+import content.Content;
 import content.EpisodeContent;
 import content.LocalContent;
 import content.SeriesContent;
@@ -20,14 +21,18 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class SeriesPage implements Page {
     private Scene scene;
     private SeriesContent series;
 
-    final Label searchFilterLabel = new Label("");
-    final ImageView loadingGif = new ImageView("loading_medium.gif");
+    final private Label searchFilterLabel = new Label("");
+    final private ImageView loadingGif = new ImageView("loading_medium.gif");
 
     private ChoiceBox seasonSelector = new ChoiceBox();
     private VBox episodeContainer = new VBox();
@@ -84,7 +89,7 @@ public class SeriesPage implements Page {
         VBox mainBox = new VBox();
         mainBox.setStyle("-fx-background-color: rgb(30,30,30);");
         mainBox.setFillWidth(true);
-        mainBox.setAlignment(Pos.TOP_LEFT);
+        mainBox.setAlignment(Pos.TOP_CENTER);
         scrollPane.setContent(mainBox);
         scrollPane.setStyle("-fx-background-color: rgb(30,30,30);");
         scrollPane.getStyleClass().add("scrollPane");
@@ -97,7 +102,7 @@ public class SeriesPage implements Page {
         HBox hbox1 = new HBox();
         hbox1.setSpacing(10);
         VBox.setMargin(hbox1, new Insets(20,20,0,20));
-        hbox1.setAlignment(Pos.TOP_LEFT);
+        hbox1.setAlignment(Pos.TOP_CENTER);
         mainBox.getChildren().add(hbox1);
 
         // Title
@@ -131,7 +136,7 @@ public class SeriesPage implements Page {
         // Cover, Summary Container
         HBox hbox2 = new HBox();
         VBox.setMargin(hbox2, new Insets(20));
-        hbox2.setAlignment(Pos.CENTER_LEFT);
+        hbox2.setAlignment(Pos.TOP_CENTER);
         VBox vbox1 = new VBox();
         mainBox.getChildren().add(hbox2);
 
@@ -187,6 +192,8 @@ public class SeriesPage implements Page {
         }
         seasonSelector.setItems(FXCollections.observableArrayList(seasonDropdownText));
         seasonSelector.getSelectionModel().select(0);
+        seasonSelector.getStyleClass().add("choice-box");
+        seasonSelector.getStylesheets().add("dropdown.css");
         updateEpisodes(1);
         // On Item Change
         seasonSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> updateEpisodes(new_value.intValue()+1));
@@ -194,10 +201,9 @@ public class SeriesPage implements Page {
         mainBox.getChildren().add(seasonSelector);
 
         // Episodes
-        episodeContainer.setAlignment(Pos.TOP_LEFT);
+        episodeContainer.setAlignment(Pos.TOP_CENTER);
         episodeContainer.setSpacing(5);
         episodeContainer.setFillWidth(false);
-        episodeContainer.setMaxWidth(550);
         VBox.setMargin(episodeContainer, new Insets(20));
         mainBox.getChildren().add(episodeContainer);
 
@@ -229,24 +235,34 @@ public class SeriesPage implements Page {
         HashMap<String, String> filter = new HashMap();
         filter.put("ShowID",series.getId());
         filter.put("Season",String.valueOf(seasonNumber));
-        ArrayList<LocalContent> result = StreamingService.getInstance().search("", "Episodes", filter);
-        for (LocalContent content : result) {
+        ExecutorService searchThread = Executors.newSingleThreadExecutor();
+        Future<ArrayList<Content>> searchResult = searchThread.submit(StreamingService.getInstance().search("Episodes", filter));
+        ArrayList<Content> result = null;
+        try {
+            result = searchResult.get();
+        } catch (Exception e) {
+            System.out.println("THREAD ERROR");
+        }
+        searchThread.shutdown();
+        for (Content content : result) {
             EpisodeContent ep = (EpisodeContent)content;
             HBox epBox = new HBox();
-            epBox.setMaxWidth(550);
+            epBox.setAlignment(Pos.TOP_LEFT);
             VBox.setMargin(epBox, new Insets(0,5,25,20));
             epBox.setSpacing(25);
 
             // Title
+            VBox vb = new VBox();
             Text epName = new Text("Episode " + ep.getEpisodeNumber() + ": " + ep.getTitle());
             epName.setFill(Color.WHITE);
-            epName.setFont(new Font("Segoe UI Bold", 20));
-            VBox.setMargin(epName, new Insets(5,5,5,20));
+            epName.setFont(new Font("Segoe UI Bold", 24));
+            VBox.setMargin(epName, new Insets(5,0,5,0));
+            vb.getChildren().add(epName);
 
             // Thumbnail
             ImageView thumbnail = new ImageView(ep.getImage());
             thumbnail.setPreserveRatio(true);
-            thumbnail.setFitWidth(250);
+            thumbnail.setFitWidth(400);
             thumbnail.setSmooth(true);
             HBox.setMargin(thumbnail, new Insets(5));
 
@@ -255,12 +271,12 @@ public class SeriesPage implements Page {
             summaryText.setWrappingWidth(600);
             summaryText.setFill(Color.DARKGRAY);
             summaryText.setFont(new Font("Segoe UI", 20));
+            vb.getChildren().add(summaryText);
 
 
             epBox.setAlignment(Pos.CENTER_LEFT);
             epBox.getChildren().add(thumbnail);
-            epBox.getChildren().add(summaryText);
-            episodeContainer.getChildren().add(epName);
+            epBox.getChildren().add(vb);
             episodeContainer.getChildren().add(epBox);
         }
     }
