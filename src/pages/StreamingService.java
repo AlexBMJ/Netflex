@@ -5,11 +5,9 @@ import content.Content;
 import content.ExternalContent;
 import content.TVDBResult;
 import database.AlgoliaAPI;
-import database.SearchDatabase;
-import javafx.geometry.Pos;
+import database.ContentDatabase;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -18,7 +16,7 @@ import java.util.concurrent.Callable;
 
 public class StreamingService {
     private static StreamingService service;
-    private static SearchDatabase database = new SearchDatabase();
+    private static ContentDatabase database = new ContentDatabase();
     private LinkedList<Page> pageCache;
     private Stage stage;
     private int cacheSize;
@@ -62,49 +60,39 @@ public class StreamingService {
         }
     }
 
-    public Callable<ArrayList<Content>> search(String contentType, HashMap<String, String> searchFilters) {
-        return () -> {
-        if (searchFilters.containsKey("API Search")) {
-            String type = AlgoliaAPI.MOVIE;
-            if (contentType == "Movies")
-                type = AlgoliaAPI.MOVIE;
-            else if (contentType == "Shows")
-                type = AlgoliaAPI.TVSHOW;
+    public ArrayList<Content> APISearch(String contentType, HashMap<String, String> searchFilters) {
+        String type = AlgoliaAPI.MOVIE;
+        if (contentType == "Movies")
+            type = AlgoliaAPI.MOVIE;
+        else if (contentType == "Shows")
+            type = AlgoliaAPI.TVSHOW;
 
-            String query = searchFilters.get("API Search");
-            if (query.length() < 1)
-                query = "mission";
+        String query = searchFilters.get("API Search");
+        if (query.length() < 1)
+            query = "mission";
 
-            ArrayList<Content> content = new ArrayList();
-            List<TVDBResult> hits = AlgoliaAPI.getSeriesHits(query, type, 30);
-            for (TVDBResult result : hits)
-                if (AlgoliaAPI.isValid(result))
-                    content.add(new ExternalContent(result));
-            return content;
-        } else {
-            try {
-                boolean precision = false;
-                if (contentType == "Episodes")
-                    precision = true;
-                HashMap parsedFilters = new HashMap();
-                for (Map.Entry<String, String> entry : searchFilters.entrySet()) {
-                    if (entry.getKey() == "Year")
-                        parsedFilters.put(entry.getKey(), String.valueOf(Integer.parseInt(entry.getValue()) / 10));
-                    else if (entry.getKey() == "Score")
-                        parsedFilters.put(entry.getKey(), entry.getValue() + ",");
-                    else
-                        parsedFilters.put(entry.getKey(), entry.getValue());
-                }
-                return database.search(contentType, parsedFilters, precision);
-            } catch (SQLException | JsonProcessingException throwables) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Database Error! " + throwables.getMessage());
-                alert.showAndWait()
-                        .filter(response -> response == ButtonType.OK)
-                        .ifPresent(response -> alert.close());
-                return new ArrayList(){};
-            }
+        ArrayList<Content> content = new ArrayList();
+        List<TVDBResult> hits = AlgoliaAPI.getSeriesHits(query, type, 30);
+        for (TVDBResult result : hits)
+            if (AlgoliaAPI.isValid(result))
+                content.add(new ExternalContent(result));
+        return content;
+    }
+
+    public ArrayList<Content> databaseSearch(String contentType, HashMap<String, String> searchFilters) throws SQLException, JsonProcessingException {
+        boolean precision = false;
+        if (contentType == "Episodes")
+            precision = true;
+        HashMap parsedFilters = new HashMap();
+        for (Map.Entry<String, String> entry : searchFilters.entrySet()) {
+            if (entry.getKey() == "Year")
+                parsedFilters.put(entry.getKey(), String.valueOf(Integer.parseInt(entry.getValue()) / 10));
+            else if (entry.getKey() == "Score")
+                parsedFilters.put(entry.getKey(), entry.getValue() + ",");
+            else
+                parsedFilters.put(entry.getKey(), entry.getValue());
         }
-        };
+        return database.search(contentType, parsedFilters, precision);
     }
 
     public static StreamingService getInstance() {

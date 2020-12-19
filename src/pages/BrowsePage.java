@@ -2,11 +2,9 @@ package pages;
 
 
 import content.*;
-import database.AlgoliaAPI;
-import database.SearchDatabase;
+import database.Search;
 import javafx.animation.*;
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
@@ -40,7 +38,7 @@ public class BrowsePage implements Page {
     private HashMap<String, String> searchFilters = new HashMap();
     private Timeline searchDelay = new Timeline(
             new KeyFrame(Duration.seconds(1),
-                    event -> search()));
+                    event -> getCovers()));
     private boolean imageLoadCooldown = false;
     private Timer timer = new Timer();
 
@@ -386,28 +384,41 @@ public class BrowsePage implements Page {
         searchDelay.play();
     }
 
-    private void search() {
+    private void getCovers() {
         String searchType = (movieSearch ? "Movies" : "Shows");
-        flowPane.getChildren().clear();
-        ExecutorService searchThread = Executors.newSingleThreadExecutor();
-        Future<ArrayList<Content>> searchResult = searchThread.submit(StreamingService.getInstance().search(searchType, searchFilters));
-
-        Thread t = new Thread(() -> {
+        Search search = new Search(searchType, searchFilters);
+        search.setOnCompleted(() -> {
             try {
-                ArrayList<Content> result = searchResult.get(1,TimeUnit.SECONDS);
-                if (result == null || result.size() < 1)
-                    Platform.runLater(() -> noResultsElement((searchFilters.get("Title") == null ? searchFilters.get("API Search") : searchFilters.get("Title"))));
-                else {
-                    for (Content cover : result) {
-                        TimeUnit.MILLISECONDS.sleep(10);
-                        Platform.runLater(() -> addCover(cover));
-                    }
-                    Platform.runLater(() -> {fetchImages();loadingGif.setVisible(false);});
-                }
-            } catch (Exception e) {}
+                updateCovers(search.getResult());
+            } catch (InterruptedException e) {
+                showErrorMessage(e.getMessage());
+            }
         });
-        t.setDaemon(true);
-        t.start();
+        search.setOnFailed(() -> showErrorMessage(search.getError()));
+        search.run();
+    }
+
+    private void updateCovers(ArrayList<Content> result) throws InterruptedException {
+        Platform.runLater(() -> flowPane.getChildren().clear());
+        if (result == null || result.size() < 1)
+            Platform.runLater(() -> noResultsElement((searchFilters.get("Title") == null ? searchFilters.get("API Search") : searchFilters.get("Title"))));
+        else {
+            for (Content cover : result) {
+                TimeUnit.MILLISECONDS.sleep(10);
+                Platform.runLater(() -> addCover(cover));
+            }
+            Platform.runLater(() -> {
+                fetchImages();
+                loadingGif.setVisible(false);
+            });
+        }
+    }
+
+    private void showErrorMessage(String errorMsg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, "Search Failed! " + errorMsg);
+        Platform.runLater(() -> alert.showAndWait()
+                .filter(response -> response == ButtonType.OK)
+                .ifPresent(response -> alert.close()));
     }
 
     private void fetchImages() {

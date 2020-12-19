@@ -2,8 +2,9 @@ package pages;
 
 import content.Content;
 import content.EpisodeContent;
-import content.LocalContent;
 import content.SeriesContent;
+import database.Search;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -21,10 +22,6 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class SeriesPage implements Page {
@@ -194,9 +191,9 @@ public class SeriesPage implements Page {
         seasonSelector.getSelectionModel().select(0);
         seasonSelector.getStyleClass().add("choice-box");
         seasonSelector.getStylesheets().add("dropdown.css");
-        updateEpisodes(1);
+        getEpisodes(1);
         // On Item Change
-        seasonSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> updateEpisodes(new_value.intValue()+1));
+        seasonSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> getEpisodes(new_value.intValue()+1));
         VBox.setMargin(seasonSelector, new Insets(20));
         mainBox.getChildren().add(seasonSelector);
 
@@ -230,20 +227,26 @@ public class SeriesPage implements Page {
         scene = new Scene(root);
     }
 
-    private void updateEpisodes(int seasonNumber) {
-        episodeContainer.getChildren().clear();
+    private void getEpisodes(int seasonNumber) {
+        loadingGif.setVisible(true);
         HashMap<String, String> filter = new HashMap();
         filter.put("ShowID",series.getId());
         filter.put("Season",String.valueOf(seasonNumber));
-        ExecutorService searchThread = Executors.newSingleThreadExecutor();
-        Future<ArrayList<Content>> searchResult = searchThread.submit(StreamingService.getInstance().search("Episodes", filter));
-        ArrayList<Content> result = null;
-        try {
-            result = searchResult.get();
-        } catch (Exception e) {
-            System.out.println("THREAD ERROR");
-        }
-        searchThread.shutdown();
+        Search search = new Search("Episodes", filter);
+        search.setOnCompleted(() -> {ArrayList<Content> r = search.getResult();Platform.runLater(() -> updateEpisodes(r));});
+        search.setOnFailed(() -> showErrorMessage(search.getError()));
+        search.run();
+    }
+
+    private void showErrorMessage(String errorMsg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, "Search Failed! " + errorMsg);
+        Platform.runLater(() -> alert.showAndWait()
+                .filter(response -> response == ButtonType.OK)
+                .ifPresent(response -> alert.close()));
+    }
+
+    private void updateEpisodes(ArrayList<Content> result) {
+        episodeContainer.getChildren().clear();
         for (Content content : result) {
             EpisodeContent ep = (EpisodeContent)content;
             HBox epBox = new HBox();
@@ -279,6 +282,7 @@ public class SeriesPage implements Page {
             epBox.getChildren().add(vb);
             episodeContainer.getChildren().add(epBox);
         }
+        loadingGif.setVisible(false);
     }
 
     @Override

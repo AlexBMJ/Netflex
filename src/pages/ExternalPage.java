@@ -1,6 +1,7 @@
 package pages;
 
 import content.ExternalContent;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -154,4 +155,5 @@ public class ExternalPage implements Page {
     public Scene getScene() {
         return scene;
     }
+
 }
