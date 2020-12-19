@@ -471,7 +471,7 @@ public class BrowsePage implements Page {
     }
 
     private void noResultsElement(String query) {
-        Label lbl = new Label(String.format("No results for \"%s\" in %s", query, (!movieSearch ? "TV Shows" : "Movies")));
+        Label lbl = new Label(String.format("No results%s in %s", (query != null ? " for \""+query+"\"" : ""), (!movieSearch ? "TV Shows" : "Movies")));
         lbl.setTextFill(Color.WHITE);
         lbl.setFont(new Font("Segoe UI Semibold", 24));
         FlowPane.setMargin(lbl, new Insets(50, 0, 0, 0));
