@@ -1,6 +1,6 @@
 package pages;
 
-import content.MovieContent;
+import content.ExternalContent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,20 +16,16 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebView;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-public class MoviePage implements Page {
+public class ExternalPage implements Page {
     private Scene scene;
-    private MovieContent movie;
+    private ExternalContent series;
 
     final Label searchFilterLabel = new Label("");
     final ImageView loadingGif = new ImageView("loading_medium.gif");
 
-    public MoviePage(MovieContent movie) {
-        this.movie = movie;
+    public ExternalPage(ExternalContent series) {
+        this.series = series;
         // Root
         final VBox root = new VBox();
         root.setFillWidth(true);
@@ -43,7 +39,6 @@ public class MoviePage implements Page {
         final ImageView logo = new ImageView("netflex_logo.png");
         backButton.setPreserveRatio(true);
         backButton.setFitHeight(40);
-        backButton.setVisible(true);
         backButtonPane.setCursor(Cursor.HAND);
         logo.setPreserveRatio(true);
         logo.setFitHeight(40);
@@ -81,7 +76,7 @@ public class MoviePage implements Page {
         VBox mainBox = new VBox();
         mainBox.setStyle("-fx-background-color: rgb(30,30,30);");
         mainBox.setFillWidth(true);
-        mainBox.setAlignment(Pos.TOP_CENTER);
+        mainBox.setAlignment(Pos.TOP_LEFT);
         scrollPane.setContent(mainBox);
         scrollPane.setStyle("-fx-background-color: rgb(30,30,30);");
         scrollPane.getStyleClass().add("scrollPane");
@@ -98,88 +93,39 @@ public class MoviePage implements Page {
         mainBox.getChildren().add(hbox1);
 
         // Title
-        Text titleText = new Text(movie.getTitle());
+        Text titleText = new Text(series.getTitle());
         titleText.setFill(Color.WHITE);
         titleText.setFont(new Font("Segoe UI Bold", 40));
         hbox1.getChildren().add(titleText);
 
         // Year
-        Text yearText = new Text(String.valueOf(movie.getYear()));
+        Text yearText = new Text(String.valueOf(series.getYear()));
         yearText.setFill(Color.DARKGRAY);
         yearText.setFont(new Font("Segoe UI", 40));
         hbox1.getChildren().add(yearText);
 
-        // Score
-        Text scoreText = new Text(String.valueOf(movie.getScore()));
-        scoreText.setFill(Color.DARKGRAY);
-        scoreText.setFont(new Font("Segoe UI Bold", 20));
-        HBox.setMargin(scoreText, new Insets(20,0,0,20));
-        hbox1.getChildren().add(scoreText);
-
-        // Length
-        Text lengthText = new Text(movie.getLength());
-        lengthText.setFill(Color.DARKGRAY);
-        lengthText.setFont(new Font("Segoe UI Italic", 20));
-        HBox.setMargin(lengthText, new Insets(20,0,0,5));
-        hbox1.getChildren().add(lengthText);
-
-
-
-        // Cover, Trailer Container
+        // Cover, Summary Container
         HBox hbox2 = new HBox();
-        hbox2.setAlignment(Pos.CENTER_LEFT);
+        hbox2.setAlignment(Pos.CENTER);
+        VBox vbox1 = new VBox();
+        hbox2.getChildren().add(vbox1);
         mainBox.getChildren().add(hbox2);
 
         // Cover
-        ImageView cover = new ImageView(movie.getImage());
+        ImageView cover = new ImageView(series.getImage());
         cover.setPreserveRatio(true);
         cover.setFitWidth(450);
         cover.setSmooth(true);
-        HBox.setMargin(cover, new Insets(20));
-        hbox2.getChildren().add(cover);
-
-        // Trailer
-        WebView trailer = new WebView();
-        trailer.setPrefWidth(1150);
-        AnchorPane webAP = new AnchorPane();
-        HBox.setMargin(webAP, new Insets(20));
-        AnchorPane.setTopAnchor(trailer, 0d);
-        AnchorPane.setBottomAnchor(trailer, 0d);
-        AnchorPane.setLeftAnchor(trailer, 0d);
-        AnchorPane.setRightAnchor(trailer, 0d);
-        trailer.getEngine().load(
-                String.format("http://www.youtube.com/embed/%s", movie.getTrailer())
-        );
-        webAP.getChildren().add(trailer);
-        hbox2.getChildren().add(webAP);
+        VBox.setMargin(cover, new Insets(20,0,20,0));
+        vbox1.getChildren().add(cover);
 
         // Summary
-        Text summaryText = new Text(movie.getSummary());
-        VBox.setMargin(mainBox, new Insets(20));
+        Text summaryText = new Text(series.getSummary());
+        VBox.setMargin(summaryText, new Insets(0,0,20,0));
         summaryText.setWrappingWidth(450);
         summaryText.setFill(Color.DARKGRAY);
         summaryText.setFont(new Font("Segoe UI", 20));
-        mainBox.getChildren().add(summaryText);
-
-        // People
-        Text stars = new Text("Starring: " + Arrays.asList(movie.getStars()).stream().collect(Collectors.joining(",\r               ")));
-        VBox.setMargin(stars, new Insets(20));
-        stars.setFill(Color.DARKGRAY);
-        stars.setFont(new Font("Segoe UI", 20));
-        mainBox.getChildren().add(stars);
-
-        Text writers = new Text("Writers: " + Arrays.asList(movie.getWriters()).stream().collect(Collectors.joining(",\r             ")));
-        VBox.setMargin(writers, new Insets(20));
-        writers.setFill(Color.DARKGRAY);
-        writers.setFont(new Font("Segoe UI", 20));
-        mainBox.getChildren().add(writers);
-
-        // Genres
-        Text genreText = new Text(Arrays.asList(movie.getGenres()).stream().collect(Collectors.joining("\r")));
-        VBox.setMargin(genreText, new Insets(20));
-        genreText.setFill(Color.DARKGRAY);
-        genreText.setFont(new Font("Segoe UI", 20));
-        mainBox.getChildren().add(genreText);
+        vbox1.getChildren().add(summaryText);
 
         // Loading Image
         loadingGif.setBlendMode(BlendMode.SCREEN);
@@ -192,7 +138,6 @@ public class MoviePage implements Page {
 
         backButtonPane.setOnMouseClicked(mouseEvent -> {
             try {
-                trailer.getEngine().reload();
                 StreamingService.getInstance().prevPage();
             } catch (PageCacheException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No more previous pages!");

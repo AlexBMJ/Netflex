@@ -1,14 +1,13 @@
 package content;
 
-import java.awt.image.BufferedImage;
-
 public class EpisodeContent extends LocalContent {
     private int episodeNumber;
     private int seasonNumber;
     private String showId;
 
-    public EpisodeContent(String id, String title, String summary, String length, int score, int year, String[] genres, String[] writers, String[] stars, byte[] image, int episodeNumber, int seasonNumber) {
-        super(id, title, summary, length, score, year, genres, writers, stars, image);
+    public EpisodeContent(String id, String title, String summary, String length, String[] writers, String[] stars, byte[] image, String showId, int episodeNumber, int seasonNumber) {
+        super(id, title, summary, length, 0f, 0, new String[]{}, writers, stars, image);
+        this.showId = showId;
         this.episodeNumber = episodeNumber;
         this.seasonNumber = seasonNumber;
     }
