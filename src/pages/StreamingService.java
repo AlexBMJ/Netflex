@@ -6,8 +6,10 @@ import content.ExternalContent;
 import content.TVDBResult;
 import database.AlgoliaAPI;
 import database.SearchDatabase;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -37,6 +39,11 @@ public class StreamingService {
             pageCache.add(0, this.currentPage);
         this.currentPage = page;
         stage.setScene(this.currentPage.getScene());
+        if (stage.isMaximized()) {
+            stage.setMaximized(false);
+            stage.setMaximized(true);
+        } else
+            stage.setHeight(stage.getHeight()-1);
         stage.show();
     }
 
@@ -44,6 +51,11 @@ public class StreamingService {
         if (pageCache.size() > 0) {
             this.currentPage = pageCache.pop();
             stage.setScene(this.currentPage.getScene());
+            if (stage.isMaximized()) {
+                stage.setMaximized(false);
+                stage.setMaximized(true);
+            } else
+                stage.setHeight(stage.getHeight()+1);
             stage.show();
         } else {
             throw new PageCacheException("No more pages");

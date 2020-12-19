@@ -127,9 +127,9 @@ public class BrowsePage implements Page {
         searchField.setMaxWidth(300);
         searchField.setMaxHeight(25);
         searchField.setPromptText("Search");
-        searchField.setFont(new Font("Segoe UI Bold", 14));
+        searchField.setFont(new Font("Segoe UI Bold", 20));
         searchField.setStyle("-fx-background-color: rgb(20,20,20); -fx-text-fill: white");
-        searchField.setOpacity(0.8f);
+        searchField.setOpacity(0.9f);
         searchField.setAlignment(Pos.TOP_CENTER);
         StackPane.setMargin(searchField, new Insets(20,0,0,0));
         searchField.setOnKeyTyped(keyEvent -> resetSearchDelay(searchField.getText()));
