@@ -11,6 +11,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -135,6 +136,9 @@ public class MoviePage implements Page {
         cover.setPreserveRatio(true);
         cover.setFitWidth(450);
         cover.setSmooth(true);
+        DropShadow ds = new DropShadow();
+        ds.setRadius(20);
+        cover.setEffect(ds);
         HBox.setMargin(cover, new Insets(20));
         hbox2.getChildren().add(cover);
 
@@ -142,6 +146,7 @@ public class MoviePage implements Page {
         WebView trailer = new WebView();
         trailer.setPrefWidth(1150);
         AnchorPane webAP = new AnchorPane();
+        webAP.setEffect(ds);
         HBox.setMargin(webAP, new Insets(20));
         AnchorPane.setTopAnchor(trailer, 0d);
         AnchorPane.setBottomAnchor(trailer, 0d);

@@ -10,6 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="jdk" jdkName="15" jdkType="JavaSDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.imgscalr:imgscalr-lib:4.2" level="project" />
     <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.32.3.3" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
@@ -24,13 +25,14 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:win:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:15.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:win:15.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:15.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-web:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-web:win:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-media:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-media:win:15.0.1" level="project" />
-    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:win:15.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:15.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:15.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:linux:15.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:mac:15.0.1" level="project" />
   </component>
 </module>

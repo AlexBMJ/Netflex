@@ -11,6 +11,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -113,6 +114,9 @@ public class ExternalPage implements Page {
 
         // Cover
         ImageView cover = new ImageView(series.getImage());
+        DropShadow ds = new DropShadow();
+        ds.setRadius(20);
+        cover.setEffect(ds);
         cover.setPreserveRatio(true);
         cover.setFitWidth(450);
         cover.setSmooth(true);
