@@ -1,11 +1,11 @@
 package com.example.netflex;
 
+import com.example.netflex.controllers.BrowseController;
+import com.example.netflex.pages.StreamingService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import com.example.netflex.pages.BrowsePage;
-import com.example.netflex.pages.StreamingService;
 
 public class Main extends Application {
     @Override
@@ -19,7 +19,7 @@ public class Main extends Application {
             System.exit(0);
         });
         StreamingService window = StreamingService.create(stage, 10);
-        window.addPage(new BrowsePage());
+        window.addPage(new BrowseController());
     }
 
     public static void main(String[] args) {

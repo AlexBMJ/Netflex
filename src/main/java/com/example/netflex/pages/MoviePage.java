@@ -6,11 +6,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -22,12 +19,13 @@ import javafx.scene.web.WebView;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class MoviePage implements Page {
-    private Scene scene;
-    private MovieContent movie;
+public class MoviePage {
+    public Scene scene;
+    public MovieContent movie;
 
-    final Label searchFilterLabel = new Label("");
-    final ImageView loadingGif = new ImageView("loading_medium.gif");
+    final private Label searchFilterLabel = new Label("");
+    final public Pane backButtonPane = new Pane();
+    final public WebView trailer = new WebView();
 
     public MoviePage(MovieContent movie) {
         this.movie = movie;
@@ -40,7 +38,7 @@ public class MoviePage implements Page {
         // Header
         final GridPane gp1 = new GridPane();
         final ImageView backButton = new ImageView("back.png");
-        final Pane backButtonPane = new Pane(backButton);
+        backButtonPane.getChildren().add(backButton);
         final ImageView logo = new ImageView("netflex_logo.png");
         backButton.setPreserveRatio(true);
         backButton.setFitHeight(40);
@@ -143,7 +141,6 @@ public class MoviePage implements Page {
         hbox2.getChildren().add(cover);
 
         // Trailer
-        WebView trailer = new WebView();
         trailer.setPrefWidth(1150);
         AnchorPane webAP = new AnchorPane();
         webAP.setEffect(ds);
@@ -186,32 +183,6 @@ public class MoviePage implements Page {
         genreText.setFont(new Font("Segoe UI", 20));
         mainBox.getChildren().add(genreText);
 
-        // Loading Image
-        loadingGif.setBlendMode(BlendMode.SCREEN);
-        loadingGif.setPreserveRatio(true);
-        loadingGif.setFitWidth(400);
-        loadingGif.setVisible(false);
-        StackPane.setMargin(loadingGif, new Insets(0, 0, 20,0));
-        StackPane.setAlignment(loadingGif, Pos.BOTTOM_CENTER);
-        stackPane.getChildren().add(loadingGif);
-
-        backButtonPane.setOnMouseClicked(mouseEvent -> {
-            try {
-                trailer.getEngine().reload();
-                StreamingService.getInstance().prevPage();
-            } catch (PageCacheException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No more previous pages!");
-                alert.showAndWait()
-                        .filter(response -> response == ButtonType.OK)
-                        .ifPresent(response -> alert.close());
-            }
-        });
-
         scene = new Scene(root);
-    }
-
-    @Override
-    public Scene getScene() {
-        return scene;
     }
 }

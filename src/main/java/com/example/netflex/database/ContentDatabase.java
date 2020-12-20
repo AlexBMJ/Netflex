@@ -25,9 +25,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ContentDatabase {
-    public Connection conn;
+    private Connection conn;
+    private static ContentDatabase database;
 
-    public ContentDatabase() {
+    private ContentDatabase() {
         String url = "jdbc:sqlite::resource:Netflex.db";
         try {
             conn = DriverManager.getConnection(url);
@@ -36,10 +37,22 @@ public class ContentDatabase {
         }
     }
 
+    public static ContentDatabase getInstance() {
+        if (database == null)
+            database = new ContentDatabase();
+        return database;
+    }
+
+    public static void close() {
+        if (database != null)
+            database.conn = null;
+        database = null;
+    }
+
     public ArrayList search(String table, HashMap<String, String> searchFilters, boolean precise) throws SQLException, JsonProcessingException{
         String sql = String.format("SELECT * FROM %s", table);
 
-        TreeMap<String, String> orderedMap = new TreeMap();
+        LinkedHashMap<String, String> orderedMap = new LinkedHashMap();
         orderedMap.putAll(searchFilters);
 
         ArrayList<String> sqlFilter = new ArrayList();

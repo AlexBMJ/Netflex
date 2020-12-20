@@ -3,15 +3,15 @@ package com.example.netflex.pages;
 import com.example.netflex.content.Content;
 import com.example.netflex.content.EpisodeContent;
 import com.example.netflex.content.SeriesContent;
-import com.example.netflex.database.Search;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -22,21 +22,19 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
-public class SeriesPage implements Page {
-    private Scene scene;
-    private SeriesContent series;
+public class SeriesPage {
+    public Scene scene;
 
     final private Label searchFilterLabel = new Label("");
     final private ImageView loadingGif = new ImageView("loading_medium.gif");
 
-    private ChoiceBox seasonSelector = new ChoiceBox();
-    private VBox episodeContainer = new VBox();
+    final public Pane backButtonPane = new Pane();
+    final public ChoiceBox seasonSelector = new ChoiceBox();
+    final public VBox episodeContainer = new VBox();
 
     public SeriesPage(SeriesContent series) {
-        this.series = series;
         // Root
         final VBox root = new VBox();
         root.setFillWidth(true);
@@ -46,8 +44,8 @@ public class SeriesPage implements Page {
         // Header
         final GridPane gp1 = new GridPane();
         final ImageView backButton = new ImageView("back.png");
-        final Pane backButtonPane = new Pane(backButton);
         final ImageView logo = new ImageView("netflex_logo.png");
+        backButtonPane.getChildren().add(backButton);
         backButton.setPreserveRatio(true);
         backButton.setFitHeight(40);
         backButtonPane.setCursor(Cursor.HAND);
@@ -195,9 +193,8 @@ public class SeriesPage implements Page {
         seasonSelector.getSelectionModel().select(0);
         seasonSelector.getStyleClass().add("choice-box");
         seasonSelector.getStylesheets().add("dropdown.css");
-        getEpisodes(1);
+
         // On Item Change
-        seasonSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> getEpisodes(new_value.intValue()+1));
         VBox.setMargin(seasonSelector, new Insets(20));
         mainBox.getChildren().add(seasonSelector);
 
@@ -217,32 +214,10 @@ public class SeriesPage implements Page {
         StackPane.setAlignment(loadingGif, Pos.BOTTOM_CENTER);
         stackPane.getChildren().add(loadingGif);
 
-        backButtonPane.setOnMouseClicked(mouseEvent -> {
-            try {
-                StreamingService.getInstance().prevPage();
-            } catch (PageCacheException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No more previous pages!");
-                alert.showAndWait()
-                    .filter(response -> response == ButtonType.OK)
-                    .ifPresent(response -> alert.close());
-            }
-        });
-
         scene = new Scene(root);
     }
 
-    private void getEpisodes(int seasonNumber) {
-        loadingGif.setVisible(true);
-        HashMap<String, String> filter = new HashMap();
-        filter.put("ShowID",series.getId());
-        filter.put("Season",String.valueOf(seasonNumber));
-        Search search = new Search("Episodes", filter);
-        search.setOnCompleted(() -> {ArrayList<Content> r = search.getResult();Platform.runLater(() -> updateEpisodes(r));});
-        search.setOnFailed(() -> StreamingService.getInstance().showErrorMessage(search.getError()));
-        search.run();
-    }
-
-    private void updateEpisodes(ArrayList<Content> result) {
+    public void updateEpisodes(ArrayList<Content> result) {
         episodeContainer.getChildren().clear();
         for (Content content : result) {
             EpisodeContent ep = (EpisodeContent)content;
@@ -285,8 +260,7 @@ public class SeriesPage implements Page {
         loadingGif.setVisible(false);
     }
 
-    @Override
-    public Scene getScene() {
-        return scene;
+    public void setLoading(boolean v) {
+        loadingGif.setVisible(v);
     }
 }

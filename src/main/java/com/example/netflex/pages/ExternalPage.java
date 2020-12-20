@@ -6,8 +6,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BlendMode;
@@ -18,15 +16,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public class ExternalPage implements Page {
-    private Scene scene;
-    private ExternalContent series;
+public class ExternalPage {
+    public Scene scene;
 
-    final Label searchFilterLabel = new Label("");
-    final ImageView loadingGif = new ImageView("loading_medium.gif");
+    final private Label searchFilterLabel = new Label("");
+    final private ImageView loadingGif = new ImageView("loading_medium.gif");
+    final public  Pane backButtonPane = new Pane();
 
-    public ExternalPage(ExternalContent series) {
-        this.series = series;
+    public ExternalPage(ExternalContent content) {
         // Root
         final VBox root = new VBox();
         root.setFillWidth(true);
@@ -36,10 +33,11 @@ public class ExternalPage implements Page {
         // Header
         final GridPane gp1 = new GridPane();
         final ImageView backButton = new ImageView("back.png");
-        final Pane backButtonPane = new Pane(backButton);
+        backButtonPane.getChildren().add(backButton);
         final ImageView logo = new ImageView("netflex_logo.png");
         backButton.setPreserveRatio(true);
         backButton.setFitHeight(40);
+        backButton.setVisible(true);
         backButtonPane.setCursor(Cursor.HAND);
         logo.setPreserveRatio(true);
         logo.setFitHeight(40);
@@ -94,13 +92,13 @@ public class ExternalPage implements Page {
         mainBox.getChildren().add(hbox1);
 
         // Title
-        Text titleText = new Text(series.getTitle());
+        Text titleText = new Text(content.getTitle());
         titleText.setFill(Color.WHITE);
         titleText.setFont(new Font("Segoe UI Bold", 40));
         hbox1.getChildren().add(titleText);
 
         // Year
-        Text yearText = new Text(String.valueOf(series.getYear()));
+        Text yearText = new Text(String.valueOf(content.getYear()));
         yearText.setFill(Color.DARKGRAY);
         yearText.setFont(new Font("Segoe UI", 40));
         hbox1.getChildren().add(yearText);
@@ -113,7 +111,7 @@ public class ExternalPage implements Page {
         mainBox.getChildren().add(hbox2);
 
         // Cover
-        ImageView cover = new ImageView(series.getImage());
+        ImageView cover = new ImageView(content.getImage());
         DropShadow ds = new DropShadow();
         ds.setRadius(20);
         cover.setEffect(ds);
@@ -124,7 +122,7 @@ public class ExternalPage implements Page {
         vbox1.getChildren().add(cover);
 
         // Summary
-        Text summaryText = new Text(series.getSummary());
+        Text summaryText = new Text(content.getSummary());
         VBox.setMargin(summaryText, new Insets(0,0,20,0));
         summaryText.setWrappingWidth(450);
         summaryText.setFill(Color.DARKGRAY);
@@ -140,23 +138,6 @@ public class ExternalPage implements Page {
         StackPane.setAlignment(loadingGif, Pos.BOTTOM_CENTER);
         stackPane.getChildren().add(loadingGif);
 
-        backButtonPane.setOnMouseClicked(mouseEvent -> {
-            try {
-                StreamingService.getInstance().prevPage();
-            } catch (PageCacheException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "No more previous pages!");
-                alert.showAndWait()
-                        .filter(response -> response == ButtonType.OK)
-                        .ifPresent(response -> alert.close());
-            }
-        });
-
         scene = new Scene(root);
     }
-
-    @Override
-    public Scene getScene() {
-        return scene;
-    }
-
 }
