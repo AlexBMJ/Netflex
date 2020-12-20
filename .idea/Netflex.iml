@@ -11,6 +11,10 @@
     </content>
     <orderEntry type="jdk" jdkName="15" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:win:15.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-web:win:15.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-media:win:15.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.imgscalr:imgscalr-lib:4.2" level="project" />
     <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.32.3.3" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
