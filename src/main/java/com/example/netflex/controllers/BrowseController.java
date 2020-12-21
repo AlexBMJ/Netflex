@@ -87,7 +87,6 @@ public class BrowseController implements Controller {
     }
 
     private void updateCovers(ArrayList<Content> result) throws InterruptedException {
-
         Platform.runLater(() -> page.clearFlowPane());
         if (result == null || result.size() < 1)
             Platform.runLater(() -> page.setNoResultsElement((searchFilters.get("Title") == null ? searchFilters.get("API Search") : searchFilters.get("Title")), movieSearch));

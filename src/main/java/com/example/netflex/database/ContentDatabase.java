@@ -39,9 +39,11 @@ public class ContentDatabase {
         return database;
     }
 
-    public static void close() {
-        if (database != null)
+    public static void close() throws SQLException {
+        if (database != null) {
+            database.conn.close();
             database.conn = null;
+        }
         database = null;
     }
 
