@@ -1,5 +1,6 @@
 package com.example.netflex.controllers;
 
+import com.example.netflex.StreamingService;
 import com.example.netflex.content.Content;
 import com.example.netflex.content.SeriesContent;
 import com.example.netflex.database.Search;
@@ -12,7 +13,7 @@ import javafx.scene.control.ButtonType;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SeriesController implements Page {
+public class SeriesController implements Controller {
     private SeriesPage page;
     private SeriesContent series;
 
@@ -56,7 +57,7 @@ public class SeriesController implements Page {
     }
 
     @Override
-    public Scene getScene() {
-        return page.scene;
+    public Page getPage() {
+        return page;
     }
 }

@@ -29,8 +29,8 @@ import javafx.util.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class BrowsePage {
-    public Scene scene;
+public class BrowsePage implements Page {
+    private Scene scene;
 
     final private VBox menuList = new VBox();
     final public FlowPane flowPane = new FlowPane();
@@ -293,5 +293,10 @@ public class BrowsePage {
 
     public void setLoading(boolean v) {
         loadingGif.setVisible(v);
+    }
+
+    @Override
+    public Scene getScene() {
+        return scene;
     }
 }

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class SeriesPage {
+public class SeriesPage implements Page {
     public Scene scene;
 
     final private Label searchFilterLabel = new Label("");
@@ -262,5 +262,10 @@ public class SeriesPage {
 
     public void setLoading(boolean v) {
         loadingGif.setVisible(v);
+    }
+
+    @Override
+    public Scene getScene() {
+        return scene;
     }
 }

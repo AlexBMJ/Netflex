@@ -19,7 +19,7 @@ import javafx.scene.web.WebView;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class MoviePage {
+public class MoviePage implements Page {
     public Scene scene;
     public MovieContent movie;
 
@@ -184,5 +184,10 @@ public class MoviePage {
         mainBox.getChildren().add(genreText);
 
         scene = new Scene(root);
+    }
+
+    @Override
+    public Scene getScene() {
+        return scene;
     }
 }

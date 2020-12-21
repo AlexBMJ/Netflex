@@ -1,30 +1,32 @@
-package com.example.netflex.pages;
+package com.example.netflex;
 
+import com.example.netflex.controllers.Controller;
+import com.example.netflex.pages.PageCacheException;
 import javafx.stage.Stage;
 
 import java.util.LinkedList;
 
 public class StreamingService {
     private static StreamingService service;
-    private LinkedList<Page> pageCache;
+    private LinkedList<Controller> controllerCache;
     private Stage stage;
     private int cacheSize;
-    private Page currentPage;
+    private Controller currentController;
 
     private StreamingService(Stage stage, int cacheSize) {
         this.cacheSize = cacheSize;
         this.stage = stage;
-        this.pageCache = new LinkedList();
+        this.controllerCache = new LinkedList();
     }
 
-    public void addPage(Page page) {
-        if (pageCache.size() >= cacheSize) {
-            pageCache.remove(pageCache.size()-1);
+    public void addPage(Controller controller) {
+        if (controllerCache.size() >= cacheSize) {
+            controllerCache.remove(controllerCache.size()-1);
         }
-        if (this.currentPage != null)
-            pageCache.add(0, this.currentPage);
-        this.currentPage = page;
-        stage.setScene(this.currentPage.getScene());
+        if (this.currentController != null)
+            controllerCache.add(0, this.currentController);
+        this.currentController = controller;
+        stage.setScene(this.currentController.getPage().getScene());
         if (stage.isMaximized()) {
             stage.setMaximized(false);
             stage.setMaximized(true);
@@ -34,9 +36,9 @@ public class StreamingService {
     }
 
     public void prevPage() throws PageCacheException {
-        if (pageCache.size() > 0) {
-            this.currentPage = pageCache.pop();
-            stage.setScene(this.currentPage.getScene());
+        if (controllerCache.size() > 0) {
+            this.currentController = controllerCache.pop();
+            stage.setScene(this.currentController.getPage().getScene());
             if (stage.isMaximized()) {
                 stage.setMaximized(false);
                 stage.setMaximized(true);

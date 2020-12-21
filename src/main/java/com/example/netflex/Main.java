@@ -1,7 +1,6 @@
 package com.example.netflex;
 
 import com.example.netflex.controllers.BrowseController;
-import com.example.netflex.pages.StreamingService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.image.Image;

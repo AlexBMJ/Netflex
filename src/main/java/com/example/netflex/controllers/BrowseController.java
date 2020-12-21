@@ -6,8 +6,8 @@ import com.example.netflex.content.MovieContent;
 import com.example.netflex.content.SeriesContent;
 import com.example.netflex.database.Search;
 import com.example.netflex.pages.BrowsePage;
+import com.example.netflex.StreamingService;
 import com.example.netflex.pages.Page;
-import com.example.netflex.pages.StreamingService;
 import com.example.netflex.pages.components.CoverImage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class BrowseController implements Page {
+public class BrowseController implements Controller {
     private BrowsePage page;
 
     final private String[] genres = {"Crime", "Drama", "Biography", "History", "Sport", "Romance", "War", "Mystery", "Adventure", "Family", "Fantasy", "Thriller", "Horror", "Film-Noir", "Musical", "Sci-fi", "Comedy", "Action", "Western"};
@@ -220,9 +220,9 @@ public class BrowseController implements Page {
     }
 
     @Override
-    public Scene getScene() {
+    public Page getPage() {
         fetchImages();
-        return page.scene;
+        return page;
     }
 }
 

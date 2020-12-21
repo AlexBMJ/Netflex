@@ -1,12 +1,13 @@
 package com.example.netflex.controllers;
 
+import com.example.netflex.StreamingService;
 import com.example.netflex.content.MovieContent;
 import com.example.netflex.pages.*;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
-public class MovieController implements Page {
+public class MovieController implements Controller {
     private MoviePage page;
     private MovieContent movie;
 
@@ -28,7 +29,7 @@ public class MovieController implements Page {
 
 
     @Override
-    public Scene getScene() {
-        return page.scene;
+    public Page getPage() {
+        return page;
     }
 }

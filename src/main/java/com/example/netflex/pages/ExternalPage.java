@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public class ExternalPage {
+public class ExternalPage implements Page {
     public Scene scene;
 
     final private Label searchFilterLabel = new Label("");
@@ -139,5 +139,10 @@ public class ExternalPage {
         stackPane.getChildren().add(loadingGif);
 
         scene = new Scene(root);
+    }
+
+    @Override
+    public Scene getScene() {
+        return scene;
     }
 }
