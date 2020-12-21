@@ -161,7 +161,7 @@ public class BrowseController implements Controller {
 
     private void filterMainMenu() {
         LinkedHashMap<String, EventHandler<MouseEvent>> subMenus = new LinkedHashMap();
-        subMenus.put(movieSearch ? "Movies" : "TV Shows", mouseEvent -> {movieSearch=!movieSearch;resetSearchDelay(page.searchField.getText());});
+        subMenus.put(movieSearch ? "TV Shows" : "Movies", mouseEvent -> {movieSearch=!movieSearch;resetSearchDelay(page.searchField.getText());});
         subMenus.put("Genre", mouseEvent -> {filterByGenre();});
         subMenus.put("Year", mouseEvent -> {filterByYear();});
         subMenus.put("Score", mouseEvent -> {filterByScore();});
