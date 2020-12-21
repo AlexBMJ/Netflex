@@ -18,7 +18,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
@@ -76,14 +75,14 @@ public class BrowseController implements Controller {
     private void getCovers() {
         String contentType = (movieSearch ? "Movies" : "Shows");
         Search search = new Search(contentType, searchFilters);
-        search.setOnCompleted(() -> {
+        search.addOnCompleted(() -> {
             try {
                 updateCovers(search.getResult());
             } catch (InterruptedException e) {
                 showErrorMessage(e.getMessage());
             }
         });
-        search.setOnFailed(() -> showErrorMessage(search.getError()));
+        search.addOnFailed(() -> showErrorMessage(search.getError()));
         search.run();
     }
 

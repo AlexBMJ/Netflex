@@ -6,7 +6,6 @@ import com.example.netflex.content.SeriesContent;
 import com.example.netflex.database.Search;
 import com.example.netflex.pages.*;
 import javafx.application.Platform;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
@@ -41,10 +40,10 @@ public class SeriesController implements Controller {
         filter.put("ShowID",series.getId());
         filter.put("Season",String.valueOf(seasonNumber));
         Search search = new Search("Episodes", filter);
-        search.setOnCompleted(() -> {
+        search.addOnCompleted(() -> {
             ArrayList<Content> r = search.getResult();
             Platform.runLater(() -> page.updateEpisodes(r));});
-        search.setOnFailed(() -> showErrorMessage(search.getError()));
+        search.addOnFailed(() -> showErrorMessage(search.getError()));
         search.run();
     }
 

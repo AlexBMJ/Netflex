@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Search {
-    private Runnable onCompleted;
-    private Runnable onFailed;
+    private ArrayList<Runnable> onCompleted;
+    private ArrayList<Runnable> onFailed;
     private ArrayList<Content> result;
     private String errorMsg;
     private Thread searchThread;
@@ -23,12 +23,12 @@ public class Search {
     public Search(String contentType, HashMap<String, String> searchFilters) {
         this.contentType = contentType;
         this.searchFilters = searchFilters;
+        this.onCompleted = new ArrayList();
+        this.onFailed = new ArrayList();
     }
 
-    public void setOnCompleted(Runnable after) {
-        onCompleted = after;
-    }
-    public void setOnFailed(Runnable failed) { onFailed = failed; }
+    public void addOnCompleted(Runnable after) { onCompleted.add(after); }
+    public void addOnFailed(Runnable failed) { onFailed.add(failed); }
 
     public void run() {
         searchThread = new Thread(() -> {
@@ -39,10 +39,12 @@ public class Search {
                     result = databaseSearch(contentType, searchFilters);
             } catch (SQLException | JsonProcessingException throwables) {
                 errorMsg = throwables.getMessage();
-                onFailed.run();
+                for (Runnable fail : onFailed)
+                        fail.run();
                 return;
             }
-            onCompleted.run();
+            for (Runnable complete : onCompleted)
+                complete.run();
         });
         searchThread.setDaemon(true);
         searchThread.start();
