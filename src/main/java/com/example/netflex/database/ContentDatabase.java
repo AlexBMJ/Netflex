@@ -28,16 +28,12 @@ public class ContentDatabase {
     private Connection conn;
     private static ContentDatabase database;
 
-    private ContentDatabase() {
+    private ContentDatabase() throws SQLException {
         String url = "jdbc:sqlite::resource:Netflex.db";
-        try {
-            conn = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        conn = DriverManager.getConnection(url);
     }
 
-    public static ContentDatabase getInstance() {
+    public static ContentDatabase getInstance() throws SQLException {
         if (database == null)
             database = new ContentDatabase();
         return database;

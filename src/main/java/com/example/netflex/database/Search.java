@@ -40,7 +40,7 @@ public class Search {
             } catch (SQLException | JsonProcessingException throwables) {
                 errorMsg = throwables.getMessage();
                 for (Runnable fail : onFailed)
-                        fail.run();
+                    fail.run();
                 return;
             }
             for (Runnable complete : onCompleted)
